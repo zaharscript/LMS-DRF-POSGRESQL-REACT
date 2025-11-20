@@ -21,6 +21,11 @@ export default function App() {
 
   return (
     <div style={{ padding: "20px" }}>
+      {/* Tailwind test line */}
+      <div className="bg-blue-500 text-white p-10 text-3xl">
+        Tailwind colors finally working!
+      </div>
+
       <h1>LMS Dashboard</h1>
 
       {courses.length === 0 ? (
