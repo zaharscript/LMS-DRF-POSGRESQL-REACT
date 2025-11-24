@@ -78,6 +78,39 @@ export default function CourseDetails({ courseId, onBack }) {
     setIsNewTopicOpen(true);
   };
 
+  // ========== SAVE EDITED SECTION (passed as onSave to modal) ==========
+  const saveEditedSection = async (sectionData) => {
+    try {
+      // sectionData should include id and title (EditSectionModal returns {...section, title})
+      await api.patch(`sections/${sectionData.id}/`, {
+        title: sectionData.title,
+      });
+      setIsEditSectionOpen(false);
+      setSelectedSection(null);
+      loadCourse();
+    } catch (err) {
+      console.error("Failed to save section:", err);
+      alert("Failed to save section");
+    }
+  };
+
+  // ========== SAVE EDITED TOPIC (passed as onSave to modal) ==========
+  const saveEditedTopic = async (topicData) => {
+    try {
+      // topicData should include id, title and description
+      await api.patch(`topics/${topicData.id}/`, {
+        title: topicData.title,
+        description: topicData.description ?? "",
+      });
+      setIsEditTopicOpen(false);
+      setSelectedTopic(null);
+      loadCourse();
+    } catch (err) {
+      console.error("Failed to save topic:", err);
+      alert("Failed to save topic");
+    }
+  };
+
   return (
     <div className="p-6 max-w-3xl mx-auto">
       {/* Back Button */}
@@ -126,23 +159,29 @@ export default function CourseDetails({ courseId, onBack }) {
         onCreate={createTopic}
       />
 
-      {/* EDIT SECTION */}
+      {/* EDIT SECTION - pass `open` + `onSave` expected by modal */}
       {selectedSection && (
         <EditSectionModal
-          isOpen={isEditSectionOpen}
-          onClose={() => setIsEditSectionOpen(false)}
+          open={isEditSectionOpen}
+          onClose={() => {
+            setIsEditSectionOpen(false);
+            setSelectedSection(null);
+          }}
           section={selectedSection}
-          onUpdated={loadCourse}
+          onSave={saveEditedSection} // <--- important: modal expects onSave
         />
       )}
 
-      {/* EDIT TOPIC */}
+      {/* EDIT TOPIC - pass `open` + `onSave` expected by modal */}
       {selectedTopic && (
         <EditTopicModal
-          isOpen={isEditTopicOpen}
-          onClose={() => setIsEditTopicOpen(false)}
+          open={isEditTopicOpen}
+          onClose={() => {
+            setIsEditTopicOpen(false);
+            setSelectedTopic(null);
+          }}
           topic={selectedTopic}
-          onUpdated={loadCourse}
+          onSave={saveEditedTopic} // <--- important: modal expects onSave
         />
       )}
     </div>

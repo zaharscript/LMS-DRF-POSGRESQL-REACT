@@ -4,6 +4,7 @@ from django.db import models
 class Course(models.Model):
     title = models.CharField(max_length=255)
     instructor = models.CharField(max_length=255)
+    provider = models.CharField(max_length=255, blank=True, null=True)
     date_joined = models.DateField()
 
     created_at = models.DateTimeField(auto_now_add=True)
