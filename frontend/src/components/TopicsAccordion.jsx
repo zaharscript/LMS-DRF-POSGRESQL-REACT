@@ -18,9 +18,9 @@ export default function TopicsAccordion({
       {/* Add Topic Button */}
       <button
         onClick={() => onAddTopic(sectionId)}
-        className="mb-3 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+        className="mb-3 px-3 py-1 bg-violet-600 text-white  hover:bg-violet-700"
       >
-        + Add Topic
+        ✏️ Added Topic
       </button>
 
       {topics.map((topic, index) => (
