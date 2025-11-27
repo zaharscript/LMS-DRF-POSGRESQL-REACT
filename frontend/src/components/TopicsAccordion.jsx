@@ -2,15 +2,15 @@ import { useState } from "react";
 
 export default function TopicsAccordion({
   topics,
+  sectionId,
   onEditTopic,
   onDeleteTopic,
   onToggleComplete,
-  onAddTopic, // NEW callback from SectionAccordion
-  sectionId, // NEW: identifies parent section
+  onAddTopic,
 }) {
   const [openIndex, setOpenIndex] = useState(null);
 
-  const toggle = (index) => {
+  const toggleTopic = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
@@ -19,9 +19,9 @@ export default function TopicsAccordion({
       {/* Add Topic Button */}
       <button
         onClick={() => onAddTopic(sectionId)}
-        className="mb-3 px-3 py-1 bg-violet-600 text-white  hover:bg-violet-700"
+        className="mb-3 px-3 py-1 bg-violet-600 text-white rounded hover:bg-violet-700"
       >
-        ✏️ Added Topic
+        + Add Topic
       </button>
 
       {topics.map((topic, index) => (
@@ -31,7 +31,7 @@ export default function TopicsAccordion({
         >
           {/* Topic Header */}
           <button
-            onClick={() => toggle(index)}
+            onClick={() => toggleTopic(index)}
             className="w-full flex justify-between items-center px-4 py-2 bg-gray-100 hover:bg-gray-200"
           >
             <div className="flex items-center gap-3">
@@ -41,6 +41,7 @@ export default function TopicsAccordion({
                 onChange={() => onToggleComplete(topic)}
                 className="w-4 h-4"
               />
+
               <span
                 className={`text-lg font-medium ${
                   topic.completed ? "line-through text-gray-500" : ""
@@ -53,7 +54,7 @@ export default function TopicsAccordion({
             <span className="text-xl">{openIndex === index ? "−" : "+"}</span>
           </button>
 
-          {/* Topic Content Area */}
+          {/* Topic Content */}
           {openIndex === index && (
             <div className="px-4 py-3 bg-white border-t border-gray-300">
               <div className="flex gap-3">

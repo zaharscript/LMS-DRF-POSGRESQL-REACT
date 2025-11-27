@@ -11,106 +11,154 @@ import NewTopicModal from "./components/NewTopicModal";
 export default function CourseDetails({ courseId, onBack }) {
   const [course, setCourse] = useState(null);
 
-  // --- Modal States ---
+  // Isolated sections state (needed for instant checkbox updates)
+  const [sections, setSections] = useState([]);
+
+  // Modal states
   const [isEditSectionOpen, setIsEditSectionOpen] = useState(false);
   const [isEditTopicOpen, setIsEditTopicOpen] = useState(false);
   const [isNewSectionOpen, setIsNewSectionOpen] = useState(false);
   const [isNewTopicOpen, setIsNewTopicOpen] = useState(false);
 
+  // Selected items
   const [selectedSection, setSelectedSection] = useState(null);
   const [selectedTopic, setSelectedTopic] = useState(null);
 
-  // For NEW topic → needs to know which section it belongs to
+  // For creating new topic → must know the section ID
   const [targetSectionId, setTargetSectionId] = useState(null);
 
-  // Load course details
+  // -------------------------------
+  // Load the course on mount
+  // -------------------------------
   useEffect(() => {
     loadCourse();
   }, [courseId]);
 
   const loadCourse = () => {
-    api.get(`courses/${courseId}/`).then((res) => setCourse(res.data));
+    api.get(`courses/${courseId}/`).then((res) => {
+      setCourse(res.data);
+      setSections(res.data.sections); // Keep "sections" usable by accordions
+    });
   };
 
   if (!course) return <p>Loading...</p>;
 
-  // ========== CREATE SECTION ==========
+  // -------------------------------
+  // CREATE SECTION
+  // -------------------------------
   const createSection = (title) => {
     api
       .post("sections/", { title, course: course.id })
       .then(() => loadCourse());
   };
 
-  // ========== CREATE TOPIC ==========
+  // -------------------------------
+  // CREATE TOPIC
+  // -------------------------------
   const createTopic = (title) => {
     api
       .post("topics/", { title, section: targetSectionId })
       .then(() => loadCourse());
   };
 
-  // ========== DELETE SECTION ==========
+  // -------------------------------
+  // DELETE SECTION
+  // -------------------------------
   const deleteSection = (sectionId) => {
     if (!confirm("Delete this section?")) return;
     api.delete(`sections/${sectionId}/`).then(() => loadCourse());
   };
 
-  // ========== DELETE TOPIC ==========
+  // -------------------------------
+  // DELETE TOPIC
+  // -------------------------------
   const deleteTopic = (topicId) => {
     if (!confirm("Delete this topic?")) return;
     api.delete(`topics/${topicId}/`).then(() => loadCourse());
   };
 
-  // ========== OPEN EDIT SECTION ==========
+  // -------------------------------
+  // Open Edit Section Modal
+  // -------------------------------
   const openEditSection = (section) => {
     setSelectedSection(section);
     setIsEditSectionOpen(true);
   };
 
-  // ========== OPEN EDIT TOPIC ==========
+  // -------------------------------
+  // Open Edit Topic Modal
+  // -------------------------------
   const openEditTopic = (topic) => {
     setSelectedTopic(topic);
     setIsEditTopicOpen(true);
   };
 
-  // ========== OPEN NEW TOPIC MODAL ==========
+  // -------------------------------
+  // Open NEW Topic Modal
+  // -------------------------------
   const openNewTopic = (sectionId) => {
     setTargetSectionId(sectionId);
     setIsNewTopicOpen(true);
   };
 
-  // ========== SAVE EDITED SECTION (passed as onSave to modal) ==========
-  const saveEditedSection = async (sectionData) => {
+  // -------------------------------
+  // Save Edited Section
+  // -------------------------------
+  const saveEditedSection = async (updated) => {
     try {
-      // sectionData should include id and title (EditSectionModal returns {...section, title})
-      await api.patch(`sections/${sectionData.id}/`, {
-        title: sectionData.title,
+      await api.patch(`sections/${updated.id}/`, {
+        title: updated.title,
       });
       setIsEditSectionOpen(false);
       setSelectedSection(null);
       loadCourse();
     } catch (err) {
-      console.error("Failed to save section:", err);
       alert("Failed to save section");
     }
   };
 
-  // ========== SAVE EDITED TOPIC (passed as onSave to modal) ==========
-  const saveEditedTopic = async (topicData) => {
+  // -------------------------------
+  // Save Edited Topic
+  // -------------------------------
+  const saveEditedTopic = async (updated) => {
     try {
-      // topicData should include id, title and description
-      await api.patch(`topics/${topicData.id}/`, {
-        title: topicData.title,
-        description: topicData.description ?? "",
+      await api.patch(`topics/${updated.id}/`, {
+        title: updated.title,
+        description: updated.description || "",
       });
       setIsEditTopicOpen(false);
       setSelectedTopic(null);
       loadCourse();
     } catch (err) {
-      console.error("Failed to save topic:", err);
       alert("Failed to save topic");
     }
   };
 
+  const toggleTopicCompletion = async (topic, sectionId) => {
+    const response = await api.patch(`topics/${topic.id}/`, {
+      title: topic.title,
+      completed: !topic.completed,
+      section: sectionId,
+    });
+
+    // Update UI instantly without reload
+    setSections((prev) =>
+      prev.map((s) =>
+        s.id === sectionId
+          ? {
+              ...s,
+              topics: s.topics.map((t) =>
+                t.id === topic.id ? response.data : t
+              ),
+            }
+          : s
+      )
+    );
+  };
+
+  // ===========================================================
+  // RENDER PAGE
+  // ===========================================================
   return (
     <div className="p-6 max-w-3xl mx-auto">
       {/* Back Button */}
@@ -119,11 +167,12 @@ export default function CourseDetails({ courseId, onBack }) {
       </button>
 
       {/* Course Info */}
-      <h2 className="text-3xl font-bold">{course.title}</h2>
+      <h1 className="text-4xl font-bold mb-2">{course.title}</h1>
       <p className="text-gray-700">Instructor: {course.instructor}</p>
+      <p className="text-gray-700">Provider: {course.provider}</p>
       <p className="text-gray-700">Date Joined: {course.date_joined}</p>
 
-      {/* Add Section Button */}
+      {/* Add New Section */}
       <button
         onClick={() => setIsNewSectionOpen(true)}
         className="mt-6 px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
@@ -131,35 +180,34 @@ export default function CourseDetails({ courseId, onBack }) {
         + Add New Section
       </button>
 
-      {/* Sections Accordion */}
+      {/* Sections */}
       <h3 className="text-2xl font-semibold mt-6 mb-2">Sections</h3>
 
       <SectionAccordion
-        sections={course.sections}
-        onDeleteSection={deleteSection}
+        sections={sections}
+        setSections={setSections}
         onEditSection={openEditSection}
+        onDeleteSection={deleteSection}
         onAddTopic={openNewTopic}
         onEditTopic={openEditTopic}
         onDeleteTopic={deleteTopic}
+        onToggleTopic={toggleTopicCompletion}
       />
 
-      {/* =================== MODALS =================== */}
+      {/* ============ MODALS ============ */}
 
-      {/* NEW SECTION */}
       <NewSectionModal
         isOpen={isNewSectionOpen}
         onClose={() => setIsNewSectionOpen(false)}
         onCreate={createSection}
       />
 
-      {/* NEW TOPIC */}
       <NewTopicModal
         isOpen={isNewTopicOpen}
         onClose={() => setIsNewTopicOpen(false)}
         onCreate={createTopic}
       />
 
-      {/* EDIT SECTION - pass `open` + `onSave` expected by modal */}
       {selectedSection && (
         <EditSectionModal
           open={isEditSectionOpen}
@@ -168,11 +216,10 @@ export default function CourseDetails({ courseId, onBack }) {
             setSelectedSection(null);
           }}
           section={selectedSection}
-          onSave={saveEditedSection} // <--- important: modal expects onSave
+          onSave={saveEditedSection}
         />
       )}
 
-      {/* EDIT TOPIC - pass `open` + `onSave` expected by modal */}
       {selectedTopic && (
         <EditTopicModal
           open={isEditTopicOpen}
@@ -181,7 +228,7 @@ export default function CourseDetails({ courseId, onBack }) {
             setSelectedTopic(null);
           }}
           topic={selectedTopic}
-          onSave={saveEditedTopic} // <--- important: modal expects onSave
+          onSave={saveEditedTopic}
         />
       )}
     </div>
