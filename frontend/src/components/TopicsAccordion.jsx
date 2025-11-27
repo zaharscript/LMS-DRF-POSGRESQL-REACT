@@ -4,6 +4,7 @@ export default function TopicsAccordion({
   topics,
   onEditTopic,
   onDeleteTopic,
+  onToggleComplete,
   onAddTopic, // NEW callback from SectionAccordion
   sectionId, // NEW: identifies parent section
 }) {
@@ -33,7 +34,22 @@ export default function TopicsAccordion({
             onClick={() => toggle(index)}
             className="w-full flex justify-between items-center px-4 py-2 bg-gray-100 hover:bg-gray-200"
           >
-            <span className="text-lg">{topic.title}</span>
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={topic.completed}
+                onChange={() => onToggleComplete(topic)}
+                className="w-4 h-4"
+              />
+              <span
+                className={`text-lg font-medium ${
+                  topic.completed ? "line-through text-gray-500" : ""
+                }`}
+              >
+                {topic.title}
+              </span>
+            </div>
+
             <span className="text-xl">{openIndex === index ? "−" : "+"}</span>
           </button>
 
