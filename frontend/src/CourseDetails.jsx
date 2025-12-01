@@ -1,19 +1,21 @@
+// src/CourseDetails.jsx
 import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "./api";
 
-// Components
 import SectionAccordion from "./components/SectionAccordion";
 import EditSectionModal from "./components/EditSectionModal";
 import EditTopicModal from "./components/EditTopicModal";
 import NewSectionModal from "./components/NewSectionModal";
 import NewTopicModal from "./components/NewTopicModal";
-import ProgressBar from "./components/ProgressBar";
 
-export default function CourseDetails({ courseId, onBack }) {
-  // ----------------- STATE -----------------
+export default function CourseDetails() {
+  const { courseId } = useParams(); // ✓ Get URL param
+  const navigate = useNavigate();
+
   const [course, setCourse] = useState(null);
-  const [sections, setSections] = useState([]);
 
+  // Modals
   const [isEditSectionOpen, setIsEditSectionOpen] = useState(false);
   const [isEditTopicOpen, setIsEditTopicOpen] = useState(false);
   const [isNewSectionOpen, setIsNewSectionOpen] = useState(false);
@@ -21,48 +23,48 @@ export default function CourseDetails({ courseId, onBack }) {
 
   const [selectedSection, setSelectedSection] = useState(null);
   const [selectedTopic, setSelectedTopic] = useState(null);
-
   const [targetSectionId, setTargetSectionId] = useState(null);
 
-  // ----------------- LOAD COURSE -----------------
+  // Load course
   useEffect(() => {
     loadCourse();
   }, [courseId]);
 
-  const loadCourse = () => {
-    api.get(`courses/${courseId}/`).then((res) => {
+  const loadCourse = async () => {
+    try {
+      const res = await api.get(`courses/${courseId}/`);
       setCourse(res.data);
-      setSections(res.data.sections || []);
-    });
+    } catch (err) {
+      console.error("Failed to load course:", err);
+    }
   };
 
-  if (!course) {
-    return <p>Loading...</p>;
-  }
+  if (!course) return <p className="p-6">Loading...</p>;
 
-  // ----------------- CREATE SECTION -----------------
-  const createSection = (title) => {
-    api.post("sections/", { title, course: course.id }).then(loadCourse);
+  // ----- CRUD operations -----
+
+  const createSection = async (title) => {
+    await api.post("sections/", { title, course: course.id });
+    loadCourse();
   };
 
-  // ----------------- CREATE TOPIC -----------------
-  const createTopic = (title) => {
-    api.post("topics/", { title, section: targetSectionId }).then(loadCourse);
+  const createTopic = async (title) => {
+    await api.post("topics/", { title, section: targetSectionId });
+    loadCourse();
   };
 
-  // ----------------- DELETE SECTION -----------------
-  const deleteSection = (sectionId) => {
+  const deleteSection = async (id) => {
     if (!confirm("Delete this section?")) return;
-    api.delete(`sections/${sectionId}/`).then(loadCourse);
+    await api.delete(`sections/${id}/`);
+    loadCourse();
   };
 
-  // ----------------- DELETE TOPIC -----------------
-  const deleteTopic = (topicId) => {
+  const deleteTopic = async (id) => {
     if (!confirm("Delete this topic?")) return;
-    api.delete(`topics/${topicId}/`).then(loadCourse);
+    await api.delete(`topics/${id}/`);
+    loadCourse();
   };
 
-  // ----------------- MODAL OPEN HANDLERS -----------------
   const openEditSection = (section) => {
     setSelectedSection(section);
     setIsEditSectionOpen(true);
@@ -78,91 +80,39 @@ export default function CourseDetails({ courseId, onBack }) {
     setIsNewTopicOpen(true);
   };
 
-  // ----------------- EDIT SAVE HANDLERS -----------------
-  const saveEditedSection = async (data) => {
-    await api.patch(`sections/${data.id}/`, { title: data.title });
-    setIsEditSectionOpen(false);
-    setSelectedSection(null);
-    loadCourse();
-  };
-
-  const saveEditedTopic = async (data) => {
-    await api.patch(`topics/${data.id}/`, {
-      title: data.title,
-      completed: data.completed,
-      section: data.section,
-    });
-
-    setIsEditTopicOpen(false);
-    setSelectedTopic(null);
-    loadCourse();
-  };
-  // ----------------- TOGGLE LOGIC -----------------
-
-  const toggleTopicCompletion = async (topic, sectionId) => {
-    const updated = {
-      title: topic.title,
-      completed: !topic.completed,
-      section: sectionId,
-    };
-
-    await api.put(`topics/${topic.id}/`, updated);
-
-    // Reload entire course or update local state
-    loadCourse();
-  };
-
-  // ----------------- RENDER -----------------
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      <button onClick={onBack} className="mb-6 text-blue-600 hover:underline">
-        ← Back
+      {/* Back button */}
+      <button
+        onClick={() => navigate("/dashboard")}
+        className="text-blue-600 mb-4 hover:underline"
+      >
+        ← Back to Dashboard
       </button>
 
       <h2 className="text-3xl font-bold">{course.title}</h2>
-      {/* COURSE PROGRESS */}
-      <div className="mt-4">
-        <p className="text-sm text-gray-600 mb-1">Overall Progress</p>
-
-        <ProgressBar
-          percent={
-            course.sections.length === 0
-              ? 0
-              : (() => {
-                  const allTopics = course.sections.flatMap((s) => s.topics);
-                  if (allTopics.length === 0) return 0;
-                  const completed = allTopics.filter((t) => t.completed).length;
-                  return (completed / allTopics.length) * 100;
-                })()
-          }
-        />
-      </div>
-
-      <p className="text-gray-700">Instructor: {course.instructor}</p>
-      <p className="text-gray-700">Date Joined: {course.date_joined}</p>
+      <p className="text-gray-600">Instructor: {course.instructor}</p>
+      <p className="text-gray-600">Date Joined: {course.date_joined}</p>
 
       <button
         onClick={() => setIsNewSectionOpen(true)}
-        className="mt-6 px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
+        className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
       >
         + Add New Section
       </button>
 
-      <h3 className="text-2xl font-semibold mt-6 mb-2">Sections</h3>
+      <h3 className="text-2xl mt-6 mb-2 font-semibold">Sections</h3>
 
       <SectionAccordion
-        sections={sections}
-        setSections={setSections}
-        onDeleteSection={deleteSection}
+        sections={course.sections}
         onEditSection={openEditSection}
+        onDeleteSection={deleteSection}
         onAddTopic={openNewTopic}
         onEditTopic={openEditTopic}
         onDeleteTopic={deleteTopic}
-        onToggleTopic={toggleTopicCompletion}
       />
 
-      {/* ----- Modals ----- */}
-
+      {/* Modals */}
       <NewSectionModal
         isOpen={isNewSectionOpen}
         onClose={() => setIsNewSectionOpen(false)}
@@ -178,24 +128,27 @@ export default function CourseDetails({ courseId, onBack }) {
       {selectedSection && (
         <EditSectionModal
           open={isEditSectionOpen}
-          onClose={() => {
-            setIsEditSectionOpen(false);
-            setSelectedSection(null);
-          }}
+          onClose={() => setIsEditSectionOpen(false)}
           section={selectedSection}
-          onSave={saveEditedSection}
+          onSave={async (data) => {
+            await api.patch(`sections/${data.id}/`, { title: data.title });
+            loadCourse();
+          }}
         />
       )}
 
       {selectedTopic && (
         <EditTopicModal
           open={isEditTopicOpen}
-          onClose={() => {
-            setIsEditTopicOpen(false);
-            setSelectedTopic(null);
-          }}
+          onClose={() => setIsEditTopicOpen(false)}
           topic={selectedTopic}
-          onSave={saveEditedTopic}
+          onSave={async (data) => {
+            await api.patch(`topics/${data.id}/`, {
+              title: data.title,
+              description: data.description,
+            });
+            loadCourse();
+          }}
         />
       )}
     </div>
