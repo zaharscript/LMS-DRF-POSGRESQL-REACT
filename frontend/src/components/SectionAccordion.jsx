@@ -1,148 +1,100 @@
 import { useState } from "react";
+import api from "../api";
 import TopicsAccordion from "./TopicsAccordion";
-import ProgressBar from "./ProgressBar";
 
 export default function SectionAccordion({
   sections,
-  setSections,
+  onAddTopic,
   onEditSection,
   onDeleteSection,
-  onAddTopic,
   onEditTopic,
   onDeleteTopic,
-  onToggleTopic,
-  onMarkAllComplete,
+  refresh,
 }) {
   const [openIndex, setOpenIndex] = useState(null);
-  const toggleSection = (i) => setOpenIndex(openIndex === i ? null : i);
 
-  const calcProgress = (sec) => {
-    const total = (sec.topics || []).length;
-    const done = (sec.topics || []).filter((t) => t.completed).length;
-    const percent = total ? Math.round((done / total) * 100) : 0;
-    return { total, done, percent };
+  const toggle = (i) => {
+    setOpenIndex(openIndex === i ? null : i);
   };
 
-  // Allow SectionAccordion to receive updated topics and update local sections
-  const handleSetSectionTopics = (sectionId, newTopics) => {
-    setSections((prev) =>
-      prev.map((s) => (s.id === sectionId ? { ...s, topics: newTopics } : s))
+  const toggleTopicCompletion = async (topicId) => {
+    const section = sections.find((s) =>
+      s.topics.some((t) => t.id === topicId)
     );
+    const topic = section.topics.find((t) => t.id === topicId);
+
+    await api.patch(`topics/${topicId}/`, {
+      title: topic.title,
+      completed: !topic.completed,
+      section: section.id,
+    });
+
+    refresh();
   };
 
   return (
-    <div className="mt-4 space-y-4">
-      {sections.map((sec, idx) => {
-        const progress = calcProgress(sec);
+    <div className="mt-6">
+      {sections.map((sec, index) => {
+        const total = sec.topics.length;
+        const completed = sec.topics.filter((t) => t.completed).length;
+        const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
+
         return (
           <div
             key={sec.id}
-            className="border rounded-2xl overflow-hidden bg-white"
+            className="border rounded-xl mb-3 overflow-hidden bg-white"
           >
-            <div className="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => toggleSection(idx)}
-                  className="p-1 rounded hover:bg-gray-200"
-                >
-                  <span className="text-xl">
-                    {openIndex === idx ? "−" : "+"}
-                  </span>
-                </button>
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-xl font-semibold">{sec.title}</h3>
+            <button
+              onClick={() => toggle(index)}
+              className="w-full flex justify-between px-4 py-3 bg-gray-100"
+            >
+              <span className="font-semibold">{sec.title}</span>
+              <span>{openIndex === index ? "−" : "+"}</span>
+            </button>
 
-                    {/* Section Progress */}
-                    {sec.topics.length > 0 && (
-                      <span className="text-sm text-gray-600">
-                        {sec.topics.filter((t) => t.completed).length} /{" "}
-                        {sec.topics.length}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Progress Bar */}
-                  {sec.topics.length > 0 && (
-                    <ProgressBar
-                      percent={
-                        (sec.topics.filter((t) => t.completed).length /
-                          sec.topics.length) *
-                        100
-                      }
-                    />
-                  )}
-
-                  <div className="text-sm text-gray-500">
-                    {progress.done}/{progress.total} topics
-                  </div>
-                </div>
+            {/* Progress */}
+            <div className="px-4 pt-2">
+              <div className="h-2 bg-gray-300 rounded">
+                <div
+                  className="h-2 bg-purple-600 rounded"
+                  style={{ width: `${pct}%` }}
+                />
               </div>
-
-              <div className="flex items-center gap-3">
-                <div className="w-40">
-                  <div className="bg-gray-200 h-2 rounded-full overflow-hidden">
-                    <div
-                      className="h-2 bg-indigo-600 transition-all"
-                      style={{ width: `${progress.percent}%` }}
-                    />
-                  </div>
-                </div>
-
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onMarkAllComplete && onMarkAllComplete(sec.id);
-                  }}
-                  title="Mark all complete"
-                  className="px-2 py-1 rounded hover:bg-gray-100 text-sm"
-                >
-                  Mark all
-                </button>
-
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEditSection(sec);
-                  }}
-                  className="px-2 py-1 rounded hover:bg-gray-100 text-sm"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDeleteSection(sec.id);
-                  }}
-                  className="px-2 py-1 rounded hover:bg-gray-100 text-sm text-red-600"
-                >
-                  Delete
-                </button>
-              </div>
+              <p className="text-sm text-gray-500 mt-1">
+                {completed}/{total} completed ({pct}%)
+              </p>
             </div>
 
-            {openIndex === idx && (
-              <div className="p-4">
-                <div className="flex justify-end mb-3">
+            {openIndex === index && (
+              <div className="p-4 border-t">
+                <div className="flex gap-3 mb-4">
+                  <button
+                    onClick={() => onEditSection(sec)}
+                    className="px-3 py-1 bg-blue-600 text-white rounded"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() => onDeleteSection(sec.id)}
+                    className="px-3 py-1 bg-red-600 text-white rounded"
+                  >
+                    Delete
+                  </button>
+
                   <button
                     onClick={() => onAddTopic(sec.id)}
-                    className="px-3 py-1 bg-violet-600 text-white rounded hover:bg-violet-700"
+                    className="px-3 py-1 bg-purple-600 text-white rounded"
                   >
                     + Add Topic
                   </button>
                 </div>
 
                 <TopicsAccordion
-                  topics={sec.topics || []}
-                  sectionId={sec.id}
+                  topics={sec.topics}
+                  onToggleComplete={toggleTopicCompletion}
                   onEditTopic={onEditTopic}
                   onDeleteTopic={onDeleteTopic}
-                  onToggleComplete={(topic) =>
-                    onToggleTopic && onToggleTopic(topic, sec.id)
-                  }
-                  onReorder={(newTopics) =>
-                    handleSetSectionTopics(sec.id, newTopics)
-                  }
                 />
               </div>
             )}
