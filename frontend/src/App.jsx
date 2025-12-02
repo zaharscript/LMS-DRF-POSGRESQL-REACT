@@ -1,18 +1,19 @@
-// App.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import CourseDetails from "./CourseDetails";
+import MainLayout from "./layout/MainLayout";
+import DashboardPage from "./pages/DashboardPage";
+import CourseDetails from "./pages/CourseDetails";
 
-export default function App() {
+function App() {
   return (
     <Router>
-      <Routes>
-        {/* Dashboard (default page) */}
-        <Route path="/" element={<Dashboard />} />
-
-        {/* Course details page */}
-        <Route path="/course/:id" element={<CourseDetails />} />
-      </Routes>
+      <MainLayout>
+        <Routes>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/course/:id" element={<CourseDetails />} />
+        </Routes>
+      </MainLayout>
     </Router>
   );
 }
+
+export default App;
