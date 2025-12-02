@@ -1,16 +1,20 @@
-// src/CourseDetails.jsx
+// src/pages/CourseDetails.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "./api";
 
-import SectionAccordion from "./components/SectionAccordion";
-import EditSectionModal from "./components/EditSectionModal";
-import EditTopicModal from "./components/EditTopicModal";
-import NewSectionModal from "./components/NewSectionModal";
-import NewTopicModal from "./components/NewTopicModal";
+import api from "../api";
+
+import MainLayout from "../layout/MainLayout";
+import RightPanel from "../components/RightPanel";
+
+import SectionAccordion from "../components/SectionAccordion";
+import EditSectionModal from "../components/EditSectionModal";
+import EditTopicModal from "../components/EditTopicModal";
+import NewSectionModal from "../components/NewSectionModal";
+import NewTopicModal from "../components/NewTopicModal";
 
 export default function CourseDetails() {
-  const { courseId } = useParams(); // ✓ Get URL param
+  const { id } = useParams(); // must match route /course/:id
   const navigate = useNavigate();
 
   const [course, setCourse] = useState(null);
@@ -25,23 +29,29 @@ export default function CourseDetails() {
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [targetSectionId, setTargetSectionId] = useState(null);
 
-  // Load course
+  // Load course on mount
   useEffect(() => {
     loadCourse();
-  }, [courseId]);
+  }, [id]);
 
   const loadCourse = async () => {
     try {
-      const res = await api.get(`courses/${courseId}/`);
+      const res = await api.get(`courses/${id}/`);
       setCourse(res.data);
     } catch (err) {
       console.error("Failed to load course:", err);
     }
   };
 
-  if (!course) return <p className="p-6">Loading...</p>;
+  if (!course) {
+    return (
+      <MainLayout>
+        <p className="p-6 text-gray-600">Loading...</p>
+      </MainLayout>
+    );
+  }
 
-  // ----- CRUD operations -----
+  // ----------- CRUD Actions -----------
 
   const createSection = async (title) => {
     await api.post("sections/", { title, course: course.id });
@@ -53,15 +63,15 @@ export default function CourseDetails() {
     loadCourse();
   };
 
-  const deleteSection = async (id) => {
+  const deleteSection = async (sid) => {
     if (!confirm("Delete this section?")) return;
-    await api.delete(`sections/${id}/`);
+    await api.delete(`sections/${sid}/`);
     loadCourse();
   };
 
-  const deleteTopic = async (id) => {
+  const deleteTopic = async (tid) => {
     if (!confirm("Delete this topic?")) return;
-    await api.delete(`topics/${id}/`);
+    await api.delete(`topics/${tid}/`);
     loadCourse();
   };
 
@@ -81,18 +91,18 @@ export default function CourseDetails() {
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      {/* Back button */}
+    <MainLayout
+      rightPanel={<RightPanel course={course} onRefresh={loadCourse} />}
+    >
       <button
-        onClick={() => navigate("/dashboard")}
-        className="text-blue-600 mb-4 hover:underline"
+        onClick={() => navigate("/")}
+        className="text-indigo-600 mb-4 hover:underline"
       >
         ← Back to Dashboard
       </button>
 
       <h2 className="text-3xl font-bold">{course.title}</h2>
       <p className="text-gray-600">Instructor: {course.instructor}</p>
-      <p className="text-gray-600">Date Joined: {course.date_joined}</p>
 
       <button
         onClick={() => setIsNewSectionOpen(true)}
@@ -110,6 +120,7 @@ export default function CourseDetails() {
         onAddTopic={openNewTopic}
         onEditTopic={openEditTopic}
         onDeleteTopic={deleteTopic}
+        refresh={loadCourse}
       />
 
       {/* Modals */}
@@ -151,6 +162,6 @@ export default function CourseDetails() {
           }}
         />
       )}
-    </div>
+    </MainLayout>
   );
 }
