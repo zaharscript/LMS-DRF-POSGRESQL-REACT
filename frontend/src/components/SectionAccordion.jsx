@@ -4,18 +4,14 @@ import TopicsAccordion from "./TopicsAccordion";
 
 export default function SectionAccordion({
   sections,
-  onAddTopic,
   onEditSection,
   onDeleteSection,
+  onAddTopic,
   onEditTopic,
   onDeleteTopic,
   refresh,
 }) {
   const [openIndex, setOpenIndex] = useState(null);
-
-  const toggle = (i) => {
-    setOpenIndex(openIndex === i ? null : i);
-  };
 
   const toggleTopicCompletion = async (topicId) => {
     const section = sections.find((s) =>
@@ -34,61 +30,55 @@ export default function SectionAccordion({
 
   return (
     <div className="mt-6">
-      {sections.map((sec, index) => {
+      {sections.map((sec, i) => {
         const total = sec.topics.length;
         const completed = sec.topics.filter((t) => t.completed).length;
-        const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
+        const pct = total ? Math.round((completed / total) * 100) : 0;
 
         return (
-          <div
-            key={sec.id}
-            className="border rounded-xl mb-3 overflow-hidden bg-white"
-          >
+          <div key={sec.id} className="border rounded-xl mb-4 bg-white">
             <button
-              onClick={() => toggle(index)}
               className="w-full flex justify-between px-4 py-3 bg-gray-100"
+              onClick={() => setOpenIndex(openIndex === i ? null : i)}
             >
               <span className="font-semibold">{sec.title}</span>
-              <span>{openIndex === index ? "−" : "+"}</span>
+              <span>{openIndex === i ? "−" : "+"}</span>
             </button>
 
             {/* Progress */}
-            <div className="px-4 pt-2">
+            <div className="px-4 py-2">
               <div className="h-2 bg-gray-300 rounded">
                 <div
-                  className="h-2 bg-purple-600 rounded"
+                  className="h-2 bg-indigo-600 rounded"
                   style={{ width: `${pct}%` }}
                 />
               </div>
-              <p className="text-sm text-gray-500 mt-1">
-                {completed}/{total} completed ({pct}%)
+              <p className="text-xs text-gray-500 mt-1">
+                {completed}/{total} — {pct}%
               </p>
             </div>
 
-            {openIndex === index && (
+            {/* Topics */}
+            {openIndex === i && (
               <div className="p-4 border-t">
-                <div className="flex gap-3 mb-4">
-                  <button
-                    onClick={() => onEditSection(sec)}
-                    className="px-3 py-1 bg-blue-600 text-white rounded"
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    onClick={() => onDeleteSection(sec.id)}
-                    className="px-3 py-1 bg-red-600 text-white rounded"
-                  >
-                    Delete
-                  </button>
-
-                  <button
-                    onClick={() => onAddTopic(sec.id)}
-                    className="px-3 py-1 bg-purple-600 text-white rounded"
-                  >
-                    + Add Topic
-                  </button>
-                </div>
+                <button
+                  onClick={() => onEditSection(sec)}
+                  className="px-3 py-1 bg-blue-600 text-white rounded mr-2"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => onDeleteSection(sec.id)}
+                  className="px-3 py-1 bg-red-600 text-white rounded mr-2"
+                >
+                  Delete
+                </button>
+                <button
+                  onClick={() => onAddTopic(sec.id)}
+                  className="px-3 py-1 bg-green-600 text-white rounded"
+                >
+                  + Add Topic
+                </button>
 
                 <TopicsAccordion
                   topics={sec.topics}

@@ -1,0 +1,91 @@
+----------------------------------------------------------------
+			  api.js
+----------------------------------------------------------------
+
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "http://127.0.0.1:8000/api/",
+});
+
+export const getCourse = (id) => api.get(`courses/${Id}/`);
+export default api;
+
+
+----------------------------------------------------------------
+			models.py
+----------------------------------------------------------------
+
+from django.db import models
+
+
+class Course(models.Model):
+    title = models.CharField(max_length=255)
+    instructor = models.CharField(max_length=255)
+    provider = models.CharField(max_length=255, blank=True, null=True)
+    date_joined = models.DateField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+
+class Section(models.Model):
+    course = models.ForeignKey(
+        Course, related_name="sections", on_delete=models.CASCADE
+    )
+    title = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.course.title} - {self.title}"
+
+
+class Topic(models.Model):
+    section = models.ForeignKey(
+        Section, related_name="topics", on_delete=models.CASCADE
+    )
+    title = models.CharField(max_length=255)
+    completed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.section.title} - {self.title}"
+
+
+----------------------------------------------------------------
+			Serializers.py
+----------------------------------------------------------------
+
+from rest_framework import serializers
+from .models import Course, Section, Topic
+
+
+class TopicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Topic
+        fields = ['id', 'section', 'title', 'completed']   # <-- section added
+
+
+class SectionSerializer(serializers.ModelSerializer):
+    topics = TopicSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Section
+        fields = ['id', 'course', 'title', 'topics']       # <-- course added
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    sections = SectionSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Course
+        fields = ['id', 'title', 'instructor','provider', 'date_joined', 'sections']
+
+
+
+
+
+
+
+
+
