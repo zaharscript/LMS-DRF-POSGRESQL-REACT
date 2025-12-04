@@ -17,4 +17,23 @@ const api = axios.create({
   },
 });
 
+// Normalize endpoints
+export const CourseAPI = {
+  list: () => api.get("courses/"),
+  retrieve: (id) => api.get(`courses/${id}/`),
+  create: (data) => api.post("courses/", data),
+};
+
+export const SectionAPI = {
+  create: (data) => api.post("sections/", data),
+  update: (id, data) => api.patch(`sections/${id}/`, data),
+  delete: (id) => api.delete(`sections/${id}/`),
+};
+
+export const TopicAPI = {
+  create: (data) => api.post("topics/", data),
+  update: (id, data) => api.patch(`topics/${id}/`, data),
+  delete: (id) => api.delete(`topics/${id}/`),
+};
+
 export default api;
