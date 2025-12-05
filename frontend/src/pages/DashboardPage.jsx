@@ -13,8 +13,8 @@ export default function DashboardPage() {
   // Create Course Handler
   const handleCreateCourse = async (courseData) => {
     try {
-      await api.post("/courses/", courseData); // <-- correct API path
-      setRefreshKey((prev) => prev + 1); // reload CourseList
+      await api.post("/courses/", courseData);   // <-- correct API path
+      setRefreshKey((prev) => prev + 1);         // reload CourseList
       setIsNewCourseOpen(false);
     } catch (error) {
       console.error("Failed to create course:", error);
@@ -25,6 +25,7 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* LEFT SIDEBAR */}
+      <Sidebar />
 
       {/* CENTER */}
       <main className="flex-1 p-6">
@@ -42,6 +43,9 @@ export default function DashboardPage() {
         {/* Course List */}
         <CourseList refreshKey={refreshKey} />
       </main>
+
+      {/* RIGHT PANEL */}
+      <RightPanel />
 
       {/* REGISTER NEW COURSE MODAL */}
       <NewCourseModal
