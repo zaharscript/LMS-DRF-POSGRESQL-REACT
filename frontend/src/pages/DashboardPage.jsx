@@ -44,8 +44,8 @@ export default function DashboardPage() {
         <CourseList refreshKey={refreshKey} />
       </main>
 
-      {/* RIGHT PANEL */}
-      <RightPanel />
+      
+      
 
       {/* REGISTER NEW COURSE MODAL */}
       <NewCourseModal
