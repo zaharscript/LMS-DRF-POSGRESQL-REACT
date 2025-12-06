@@ -1,6 +1,6 @@
-// src/components/TopicsAccordion.jsx
 import { useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function TopicsAccordion({
   topics,
@@ -10,81 +10,91 @@ export default function TopicsAccordion({
 }) {
   const [openIndex, setOpenIndex] = useState(null);
 
-  const toggle = (i) => {
-    setOpenIndex(openIndex === i ? null : i);
-  };
-
   return (
     <div className="space-y-2">
-      {topics.map((topic, i) => (
-        <div
-          key={topic.id}
-          className="border rounded-lg bg-gray-50 overflow-hidden"
-        >
-          {/* --- Topic Header Row --- */}
-          <div className="flex items-center justify-between px-4 py-2">
-            
-            {/* LEFT : checkbox + title */}
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                checked={topic.completed}
-                onClick={(e) => e.stopPropagation()}   // ★ FIX
-                onChange={(e) => { e.stopPropagation(); onToggleComplete?.(topic); }}
-                className="cursor-pointer"
-              />
+      {topics.map((topic, i) => {
+        const isOpen = openIndex === i;
 
-              <span
-                onClick={() => toggle(i)}
-                className={`cursor-pointer ${
-                  topic.completed ? "line-through text-gray-500" : ""
-                }`}
-              >
-                {topic.title}
-              </span>
+        return (
+          <div
+            key={topic.id}
+            className="border rounded-lg bg-white shadow-sm hover:shadow transition"
+          >
+            {/* ---------- ROW HEADER ---------- */}
+            <div
+              className="flex items-center justify-between px-4 py-2 cursor-pointer"
+              onClick={() => setOpenIndex(isOpen ? null : i)}
+            >
+              <div className="flex items-center gap-3">
+                {/* Checkbox MUST STOP CLICK BUBBLING */}
+                <input
+                  type="checkbox"
+                  checked={topic.completed}
+                  onChange={(e) => {
+                    e.stopPropagation(); // FIX #1
+                    onToggleComplete(topic.id);
+                  }}
+                  onClick={(e) => e.stopPropagation()} // FIX #2
+                  className="w-4 h-4"
+                />
+
+                <span
+                  className={`text-sm ${
+                    topic.completed ? "line-through text-gray-500" : ""
+                  }`}
+                >
+                  {topic.title}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {/* Edit */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEditTopic(topic);
+                  }}
+                  className="p-1 hover:bg-blue-50 rounded"
+                >
+                  <Pencil className="w-5 h-5 text-blue-600" />
+                </button>
+
+                {/* Delete */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteTopic(topic.id);
+                  }}
+                  className="p-1 hover:bg-red-50 rounded"
+                >
+                  <Trash2 className="w-5 h-5 text-red-600" />
+                </button>
+
+                {/* Toggle arrow */}
+                <ChevronDown
+                  className={`w-5 h-5 transition ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </div>
             </div>
 
-            {/* RIGHT : edit + delete icons */}
-            <div className="flex items-center gap-3">
-              <Pencil
-                size={20}
-                className="text-blue-600 cursor-pointer hover:text-blue-800"
-                onClick={(e) => {
-                  e.stopPropagation();   // ★ FIX
-                  onEditTopic(topic);
-                }}
-              />
-
-              <Trash2
-                size={20}
-                className="text-red-600 cursor-pointer hover:text-red-800"
-                onClick={(e) => {
-                  e.stopPropagation();   // ★ FIX
-                  onDeleteTopic(topic.id);
-                }}
-              />
-
-              {/* Expand / Collapse icon */}
-              <span
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggle(i);
-                }}
-                className="cursor-pointer text-gray-600"
-              >
-                {openIndex === i ? "−" : "+"}
-              </span>
-            </div>
+            {/* ---------- COLLAPSIBLE DESCRIPTION ---------- */}
+            <AnimatePresence>
+              {isOpen && topic.description && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="px-4 pb-3 text-sm text-gray-600 bg-gray-50 border-t"
+                >
+                  {topic.description}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-
-          {/* --- Accordion Content --- */}
-          {openIndex === i && (
-            <div className="px-4 py-3 border-t bg-white text-sm text-gray-600">
-              No additional details yet.
-            </div>
-          )}
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
