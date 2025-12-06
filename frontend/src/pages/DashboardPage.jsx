@@ -25,7 +25,7 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* LEFT SIDEBAR */}
-      <Sidebar />
+      {/* <Sidebar /> */}
 
       {/* CENTER */}
       <main className="flex-1 p-6">
