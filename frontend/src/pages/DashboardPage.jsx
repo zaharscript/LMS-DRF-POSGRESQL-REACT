@@ -23,7 +23,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
       {/* LEFT SIDEBAR */}
       {/* <Sidebar /> */}
 
@@ -34,7 +34,7 @@ export default function DashboardPage() {
 
           <button
             onClick={() => setIsNewCourseOpen(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:border-gray-700"
           >
             + New Course
           </button>
