@@ -30,11 +30,15 @@ export default function CourseList({ refreshKey }) {
   if (!courses.length) return <p className="p-4 text-gray-500">No courses yet.</p>;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 dark:text-gray-100
+  p-3 rounded-lg mb-2
+  transition-colors">
       {courses.map((c) => (
         <div
           key={c.id}
-          className="p-4 bg-white shadow rounded hover:shadow-md transition cursor-pointer"
+          className="p-4 bg-white shadow rounded hover:shadow-md transition cursor-pointer dark:text-gray-100
+  p-3 rounded-lg mb-2
+  transition-colors"
           onClick={() => navigate(`/course/${c.id}`)}
         >
           <div className="flex justify-between items-start">
