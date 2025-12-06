@@ -48,7 +48,7 @@ export default function DashboardPage() {
       </main>
 
       {/* RIGHT PANEL */}
-      <RightPanel />
+      {/* <RightPanel /> */}
 
       {/* New Course Modal */}
       <NewCourseModal
