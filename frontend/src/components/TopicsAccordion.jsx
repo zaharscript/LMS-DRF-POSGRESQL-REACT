@@ -30,7 +30,7 @@ export default function TopicsAccordion({
                 type="checkbox"
                 checked={topic.completed}
                 onClick={(e) => e.stopPropagation()}   // ★ FIX
-                onChange={() => onToggleComplete(topic.id)}
+                onChange={(e) => { e.stopPropagation(); onToggleComplete?.(topic); }}
                 className="cursor-pointer"
               />
 
