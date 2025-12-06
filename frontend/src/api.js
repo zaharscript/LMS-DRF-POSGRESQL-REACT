@@ -9,15 +9,16 @@ const BASE =
 
 console.log("🔥 API Base URL:", BASE);
 
-// Always ensure /api/ prefix
+// IMPORTANT: remove double /api/
+// Backend already exposes /api/... inside backend URLs
 const api = axios.create({
-  baseURL: `${BASE}/api/`,
+  baseURL: `${BASE}/api/`, // final = http://127.0.0.1:8000/api/
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Normalize endpoints
+// Normalized API wrapper
 export const CourseAPI = {
   list: () => api.get("courses/"),
   retrieve: (id) => api.get(`courses/${id}/`),
