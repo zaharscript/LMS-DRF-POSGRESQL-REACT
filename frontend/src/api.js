@@ -1,6 +1,6 @@
+// src/api.js
 import axios from "axios";
 
-// Detect environment
 const BASE =
   import.meta.env.VITE_API_BASE_URL ||
   (window.location.hostname === "localhost"
@@ -9,29 +9,29 @@ const BASE =
 
 console.log("🔥 API Base URL:", BASE);
 
-// IMPORTANT: remove double /api/
-// Backend already exposes /api/... inside backend URLs
 const api = axios.create({
-  baseURL: `${BASE}/api/`, // final = http://127.0.0.1:8000/api/
-  headers: {
-    "Content-Type": "application/json",
-  },
+  baseURL: `${BASE.replace(/\/$/, "")}/api/`,
+  headers: { "Content-Type": "application/json" },
 });
 
-// Normalized API wrapper
+// Named API helpers
 export const CourseAPI = {
   list: () => api.get("courses/"),
   retrieve: (id) => api.get(`courses/${id}/`),
   create: (data) => api.post("courses/", data),
+  update: (id, data) => api.patch(`courses/${id}/`, data),
+  delete: (id) => api.delete(`courses/${id}/`),
 };
 
 export const SectionAPI = {
+  list: () => api.get("sections/"),
   create: (data) => api.post("sections/", data),
   update: (id, data) => api.patch(`sections/${id}/`, data),
   delete: (id) => api.delete(`sections/${id}/`),
 };
 
 export const TopicAPI = {
+  list: () => api.get("topics/"),
   create: (data) => api.post("topics/", data),
   update: (id, data) => api.patch(`topics/${id}/`, data),
   delete: (id) => api.delete(`topics/${id}/`),
