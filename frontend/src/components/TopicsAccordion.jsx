@@ -1,6 +1,6 @@
 // src/components/TopicsAccordion.jsx
 import { useState } from "react";
-import { Edit3, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
 export default function TopicsAccordion({
   topics,
@@ -10,84 +10,77 @@ export default function TopicsAccordion({
 }) {
   const [openIndex, setOpenIndex] = useState(null);
 
-  const toggleAccordion = (i) => {
+  const toggle = (i) => {
     setOpenIndex(openIndex === i ? null : i);
   };
 
   return (
-    <div className="mt-2 space-y-2">
+    <div className="space-y-2">
       {topics.map((topic, i) => (
         <div
           key={topic.id}
-          className="border rounded-xl bg-gray-50 overflow-hidden"
+          className="border rounded-lg bg-gray-50 overflow-hidden"
         >
-          {/* HEADER ROW */}
-          <div className="flex items-center justify-between px-4 py-3">
-
-            {/* LEFT SIDE: checkbox + title */}
+          {/* --- Topic Header Row --- */}
+          <div className="flex items-center justify-between px-4 py-2">
+            
+            {/* LEFT : checkbox + title */}
             <div className="flex items-center gap-3">
               <input
                 type="checkbox"
                 checked={topic.completed}
+                onClick={(e) => e.stopPropagation()}   // ★ FIX
                 onChange={() => onToggleComplete(topic.id)}
                 className="cursor-pointer"
               />
 
               <span
-                className={`${
-                  topic.completed
-                    ? "line-through text-gray-500"
-                    : "text-gray-800"
+                onClick={() => toggle(i)}
+                className={`cursor-pointer ${
+                  topic.completed ? "line-through text-gray-500" : ""
                 }`}
               >
                 {topic.title}
               </span>
             </div>
 
-            {/* RIGHT SIDE: ICONS + ACCORDION TOGGLE */}
+            {/* RIGHT : edit + delete icons */}
             <div className="flex items-center gap-3">
-
-              {/* EDIT ICON */}
-              <button
+              <Pencil
+                size={20}
+                className="text-blue-600 cursor-pointer hover:text-blue-800"
                 onClick={(e) => {
-                  e.stopPropagation();
+                  e.stopPropagation();   // ★ FIX
                   onEditTopic(topic);
                 }}
-                className="p-1 hover:bg-gray-200 rounded"
-                title="Edit"
-              >
-                <Edit3 className="w-5 h-5 text-blue-600" />
-              </button>
+              />
 
-              {/* DELETE ICON */}
-              <button
+              <Trash2
+                size={20}
+                className="text-red-600 cursor-pointer hover:text-red-800"
                 onClick={(e) => {
-                  e.stopPropagation();
+                  e.stopPropagation();   // ★ FIX
                   onDeleteTopic(topic.id);
                 }}
-                className="p-1 hover:bg-gray-200 rounded"
-                title="Delete"
-              >
-                <Trash2 className="w-5 h-5 text-red-600" />
-              </button>
+              />
 
-              {/* ACCORDION TOGGLE BUTTON */}
-              <button
+              {/* Expand / Collapse icon */}
+              <span
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleAccordion(i);
+                  toggle(i);
                 }}
-                className="text-xl font-bold px-2"
+                className="cursor-pointer text-gray-600"
               >
                 {openIndex === i ? "−" : "+"}
-              </button>
+              </span>
             </div>
           </div>
 
-          {/* ACCORDION BODY */}
+          {/* --- Accordion Content --- */}
           {openIndex === i && (
-            <div className="px-4 pb-4 text-sm text-gray-600 border-t bg-white">
-              <p>No extra details yet…</p>
+            <div className="px-4 py-3 border-t bg-white text-sm text-gray-600">
+              No additional details yet.
             </div>
           )}
         </div>
