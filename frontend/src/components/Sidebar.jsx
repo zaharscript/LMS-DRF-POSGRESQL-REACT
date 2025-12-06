@@ -27,7 +27,8 @@ export default function Sidebar() {
         backdrop-blur-xl
         bg-white/20
         shadow-xl border border-white/30
-        flex flex-col justify-between
+        flex flex-col justify-between dark:border-gray-700
+  transition-colors
       "
     >
       {/* Logo */}
