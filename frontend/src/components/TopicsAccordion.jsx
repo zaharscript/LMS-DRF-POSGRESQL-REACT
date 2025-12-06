@@ -34,7 +34,7 @@ export default function TopicsAccordion({
                     e.stopPropagation(); // FIX #1
                     onToggleComplete(topic.id);
                   }}
-                  onClick={(e) => e.stopPropagation()} // FIX #2
+                 onChange={(e) => { e.stopPropagation(); onToggleComplete?.(topic); }} // FIX #2
                   className="w-4 h-4"
                 />
 
