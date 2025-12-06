@@ -14,6 +14,8 @@ export default function Sidebar() {
     { label: "Settings", icon: <Settings size={20} />, href: "/" },
   ];
 
+   const { theme, toggleTheme } = useTheme();
+  
   return (
     <aside
       className="
@@ -35,16 +37,13 @@ export default function Sidebar() {
         </h1>
 
         <button
-          onClick={toggleTheme}
-          className="p-2 rounded-xl hover:bg-white/40 dark:hover:bg-white/10
-                     transition"
-        >
-          {theme === "light" ? (
-            <Moon className="w-5 h-5 text-gray-700" />
-          ) : (
-            <Sun className="w-5 h-5 text-yellow-300" />
-          )}
-        </button>
+      onClick={toggleTheme}
+      className="flex items-center gap-2 px-3 py-2 mt-4 rounded-lg
+                 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
+    >
+      {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+      <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+    </button>
 
         {/* Menu */}
         <nav className="flex flex-col gap-3">
