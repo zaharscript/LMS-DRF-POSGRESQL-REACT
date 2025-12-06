@@ -1,39 +1,55 @@
 // src/components/TopicsAccordion.jsx
-import { useState } from "react";
+import { Edit, Trash2 } from "lucide-react";
 
 export default function TopicsAccordion({
-  topics = [],
+  topics,
   onToggleComplete,
   onEditTopic,
   onDeleteTopic,
 }) {
-  const [openIndex, setOpenIndex] = useState(null);
-  const toggle = (i) => setOpenIndex(openIndex === i ? null : i);
-
   return (
     <div className="space-y-2">
-      {topics.map((topic, i) => (
-        <div key={topic.id} className="border rounded-lg overflow-hidden bg-gray-50">
-          <button onClick={() => toggle(i)} className="w-full flex items-center justify-between px-4 py-2">
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                checked={!!topic.completed}
-                onChange={(e) => { e.stopPropagation(); onToggleComplete?.(topic); }}
-                className="w-4 h-4"
-              />
-              <span className={`${topic.completed ? "line-through text-gray-500" : ""}`}>{topic.title}</span>
-            </div>
+      {topics.map((topic) => (
+        <div
+          key={topic.id}
+          className="flex items-center justify-between p-3 bg-white border rounded-lg shadow-sm"
+        >
+          {/* Left: Checkbox + Topic Title */}
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={topic.completed}
+              onChange={() => onToggleComplete(topic.id)}
+              className="w-4 h-4"
+            />
 
-            <div>{openIndex === i ? "−" : "+"}</div>
-          </button>
+            <span
+              className={`text-sm ${
+                topic.completed ? "line-through text-gray-500" : "text-gray-800"
+              }`}
+            >
+              {topic.title}
+            </span>
+          </div>
 
-          {openIndex === i && (
-            <div className="px-4 py-3 bg-white border-t flex gap-2">
-              <button onClick={() => onEditTopic?.(topic)} className="px-3 py-1 bg-blue-600 text-white rounded">Edit</button>
-              <button onClick={() => onDeleteTopic?.(topic.id)} className="px-3 py-1 bg-red-600 text-white rounded">Delete</button>
-            </div>
-          )}
+          {/* Right: Edit + Delete icons */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => onEditTopic(topic)}
+              className="p-2 hover:bg-blue-100 rounded-full transition"
+              title="Edit Topic"
+            >
+              <Edit className="w-5 h-5 text-blue-600" />
+            </button>
+
+            <button
+              onClick={() => onDeleteTopic(topic.id)}
+              className="p-2 hover:bg-red-100 rounded-full transition"
+              title="Delete Topic"
+            >
+              <Trash2 className="w-5 h-5 text-red-600" />
+            </button>
+          </div>
         </div>
       ))}
     </div>
