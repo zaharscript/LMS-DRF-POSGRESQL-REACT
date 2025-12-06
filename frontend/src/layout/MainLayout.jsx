@@ -55,7 +55,7 @@ export default function MainLayout({ children }) {
               "
               onClick={(e) => e.stopPropagation()}
             >
-              <Sidebar />
+              {/* <Sidebar /> */}
             </div>
           </div>
         )}
