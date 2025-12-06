@@ -24,7 +24,8 @@ export default function RightPanel({ course, onRefresh }) {
     : 0;
 
   return (
-    <div className="sticky top-6 bg-white rounded-2xl shadow p-5">
+    <div className="sticky top-6 bg-white rounded-2xl shadow p-5 dark:border-gray-700
+  transition-colors">
       <div className="flex items-start justify-between">
         <div>
           <h4 className="text-lg font-semibold">{course.title}</h4>
