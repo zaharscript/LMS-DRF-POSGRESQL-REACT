@@ -7,8 +7,7 @@ export default function MainLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-
+    <div className="min-h-screen flex bg-gray-100 dark:bg-gray-900 transition-colors">
       {/* --- Top Mobile Header --- */}
       <header className="md:hidden flex items-center justify-between p-4 bg-white shadow">
         <button
@@ -17,11 +16,9 @@ export default function MainLayout({ children }) {
         >
           <Menu className="w-6 h-6" />
         </button>
-
         <h1 className="text-xl font-bold tracking-tight">
           Study<span className="text-indigo-600">Plan</span>
         </h1>
-
         <div className="w-8" /> {/* Spacer */}
       </header>
 

@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+/* Ensure smooth animation when theme switches */
+html {
+    transition: background-color 0.3s, color 0.3s;
+}
