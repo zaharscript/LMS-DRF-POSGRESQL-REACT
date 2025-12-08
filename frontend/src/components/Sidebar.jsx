@@ -1,17 +1,14 @@
 // src/components/Sidebar.jsx
-import {
-  Home,
-  BookOpen,
-  Bookmark,
-  User,
-  Settings,
-  Sun,
-  Moon,
-} from "lucide-react";
+import { Home, BookOpen, Bookmark, User, Settings, Menu } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { Sun, Moon, X } from "lucide-react";
 import useTheme from "../hooks/useTheme";
+import { useState } from "react";
 
 export default function Sidebar() {
+  const { theme, toggleTheme } = useTheme();
+  const [isOpen, setIsOpen] = useState(false);
+
   const menu = [
     { label: "Dashboard", icon: <Home size={20} />, href: "/" },
     { label: "My Courses", icon: <BookOpen size={20} />, href: "/" },
@@ -20,78 +17,87 @@ export default function Sidebar() {
     { label: "Settings", icon: <Settings size={20} />, href: "/" },
   ];
 
-  const { theme, toggleTheme } = useTheme();
-
   return (
-    <aside
-      className="
-        sticky top-6
-        h-[88vh] w-64
-        rounded-2xl
-        p-6
-        backdrop-blur-xl
-        bg-white/20 dark:bg-gray-800/40
-        border border-white/20 dark:border-gray-700
-        shadow-xl dark:shadow-black/20
-        flex flex-col justify-between
-        transition-colors duration-300
-      "
-    >
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-8">
-          Study
-          <span className="text-indigo-600 dark:text-indigo-400">Plan</span>
+    <>
+      {/* Mobile top bar */}
+      <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 shadow">
+        <h1 className="text-xl font-bold">
+          Study<span className="text-indigo-600">Plan</span>
         </h1>
 
-        {/* Dark Mode Toggle Button */}
+        <button onClick={() => setIsOpen(true)}>
+          <Menu size={26} className="text-gray-700 dark:text-gray-300" />
+        </button>
+      </div>
+
+      {/* SIDEBAR PANEL */}
+      <aside
+        className={`
+          fixed md:static top-0 left-0 h-full md:h-[88vh] w-64 
+          backdrop-blur-xl bg-white/20 dark:bg-gray-800/40 
+          border border-white/30 dark:border-gray-700 
+          shadow-xl rounded-none md:rounded-2xl 
+          p-6 flex flex-col justify-between 
+          transition-transform duration-300
+          ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+        `}
+      >
+        {/* Close button for mobile */}
         <button
-          onClick={toggleTheme}
-          className="
-            flex items-center gap-2 px-3 py-2 mb-6
-            rounded-lg
-            bg-gray-200 dark:bg-gray-700
-            text-gray-800 dark:text-gray-200
-            hover:bg-gray-300 dark:hover:bg-gray-600
-            transition
-          "
+          className="md:hidden absolute top-4 right-4 p-2 bg-white/40 dark:bg-gray-700 rounded-lg"
+          onClick={() => setIsOpen(false)}
         >
-          {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-          <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+          <X size={20} />
         </button>
 
-        {/* Menu */}
-        <nav className="flex flex-col gap-3">
-          {menu.map((item) => (
-            <NavLink
-              key={item.label}
-              to={item.href}
-              className={({ isActive }) =>
-                `
-                flex items-center gap-3
-                px-4 py-2 rounded-xl
-                font-medium
-                transition-all backdrop-blur-lg
+        {/* Logo */}
+        <div>
+          <h1 className="hidden md:block text-2xl font-bold text-gray-800 dark:text-gray-100 mb-8 tracking-tight">
+            Study<span className="text-indigo-500">Plan</span>
+          </h1>
 
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-2 px-3 py-2 mb-6 rounded-lg
+                     bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 
+                     dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200"
+          >
+            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+          </button>
+
+          {/* MENU */}
+          <nav className="flex flex-col gap-3">
+            {menu.map((item) => (
+              <NavLink
+                key={item.label}
+                to={item.href}
+                onClick={() => setIsOpen(false)}
+                className={({ isActive }) =>
+                  `
+                flex items-center gap-3 px-4 py-2 rounded-xl font-medium
+                transition-all backdrop-blur-lg
                 ${
                   isActive
-                    ? "bg-white/60 dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-white/40 dark:hover:bg-gray-700/40"
+                    ? "bg-white/60 dark:bg-gray-700 text-indigo-600 shadow"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-white/40 dark:hover:bg-gray-700 hover:text-indigo-600"
                 }
               `
-              }
-            >
-              {item.icon}
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-      </div>
+                }
+              >
+                {item.icon}
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+        </div>
 
-      {/* Footer */}
-      <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-        © {new Date().getFullYear()} StudyPlan
-      </div>
-    </aside>
+        {/* Footer */}
+        <div className="text-xs text-gray-500 dark:text-gray-400 mt-8">
+          © {new Date().getFullYear()} StudyPlan
+        </div>
+      </aside>
+    </>
   );
 }
