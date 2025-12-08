@@ -1,71 +1,63 @@
+// src/layout/MainLayout.jsx
 import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import RightPanel from "../components/RightPanel";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 export default function MainLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen flex bg-gray-100 dark:bg-gray-900 transition-colors">
-      {/* --- Top Mobile Header --- */}
-      <header className="md:hidden flex items-center justify-between p-4 bg-white shadow">
-        <button
-          onClick={() => setSidebarOpen(true)}
-          className="p-2 rounded-lg border"
-        >
-          <Menu className="w-6 h-6" />
-        </button>
-        <h1 className="text-xl font-bold tracking-tight">
+      
+      {/* ---------- MOBILE TOP BAR ---------- */}
+      <div className="lg:hidden fixed top-0 left-0 w-full z-50 
+                      bg-white dark:bg-gray-800 shadow-md p-4 flex justify-between items-center">
+        <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">
           Study<span className="text-indigo-600">Plan</span>
         </h1>
-        <div className="w-8" /> {/* Spacer */}
-      </header>
 
-      {/* --- Responsive Grid Layout --- */}
-      <div
-        className="
-          grid flex-1
-          grid-cols-1
-          md:grid-cols-[260px_1fr]
-          lg:grid-cols-[260px_1fr_300px]
-          gap-4 p-4
-        "
-      >
-        {/* --- Sidebar (Desktop) --- */}
-        <aside className="hidden md:block">
-          <Sidebar />
-        </aside>
+        {/* Mobile Menu Button */}
+        <button 
+          onClick={() => setSidebarOpen(!sidebarOpen)} 
+          className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700">
+          {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
 
-        {/* --- Sidebar (Mobile Slide-in) --- */}
+      {/* ---------- SIDEBAR (MOBILE OVERLAY + DESKTOP FIXED) ---------- */}
+      <div>
+        {/* Mobile Overlay */}
         {sidebarOpen && (
-          <div
-            className="
-              fixed inset-0 bg-black/40 z-40 md:hidden
-            "
+          <div 
             onClick={() => setSidebarOpen(false)}
-          >
-            <div
-              className="
-                absolute left-0 top-0 h-full w-64
-                bg-white shadow-xl p-4 z-50
-              "
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Sidebar />
-            </div>
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden">
           </div>
         )}
 
-        {/* --- MAIN CONTENT --- */}
-        <main className="bg-white rounded-xl shadow-sm p-4 md:p-6">
-          {children}
-        </main>
-
-        {/* --- Right Panel (Desktop Only) --- */}
-        <aside className="hidden lg:block">
-          <RightPanel />
+        {/* Sidebar panel */}
+        <aside
+          className={`
+            fixed z-50 lg:static
+            top-0 left-0
+            h-full lg:h-[88vh]
+            w-64 
+            transform transition-transform duration-300
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          `}
+        >
+          <Sidebar closeSidebar={() => setSidebarOpen(false)} />
         </aside>
+      </div>
+
+      {/* ---------- MAIN CONTENT AREA ---------- */}
+      <main className="flex-1 p-4 lg:p-8 mt-16 lg:mt-0">
+        {children}
+      </main>
+
+      {/* ---------- RIGHT PANEL (DESKTOP ONLY) ---------- */}
+      <div className="hidden xl:block w-80 p-4">
+        <RightPanel />
       </div>
     </div>
   );
