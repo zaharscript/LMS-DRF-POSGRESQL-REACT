@@ -53,18 +53,18 @@ export default function CourseList({ refreshKey }) {
             onClick={() => navigate(`/course/${c.id}`)}
             className="relative rounded-lg overflow-hidden shadow hover:shadow-lg cursor-pointer transition"
           >
-            {/* Background Image */}
+            {/* Image */}
             <div
-              className="h-40 bg-cover bg-center"
+              className="h-40 bg-cover bg-center relative z-0"
               style={{ backgroundImage: `url(${bgImage})` }}
             />
 
-            {/* Dark overlay */}
-            <div className="absolute inset-0 bg-black/40" />
+            {/* Overlay (ONLY over image) */}
+            <div className="absolute top-0 left-0 right-0 h-40 bg-black/40 z-10" />
 
             {/* Content */}
-            <div className="absolute inset-0 p-4 flex flex-col justify-end text-white">
-              <h3 className="font-semibold text-lg leading-tight">{c.title}</h3>
+            <div className="absolute inset-0 z-20 p-4 flex flex-col justify-end text-white">
+              <h3 className="font-semibold text-lg">{c.title}</h3>
               <p className="text-sm opacity-90">{c.instructor}</p>
               {c.provider && (
                 <p className="text-xs opacity-75 mt-1">
