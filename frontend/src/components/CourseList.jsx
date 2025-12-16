@@ -9,8 +9,8 @@ import { useNavigate } from "react-router-dom";
  * - sig ensures different images for different courses
  */
 function getCourseImage(title, id) {
-  const keyword = encodeURIComponent(title || "learning");
-  return `https://source.unsplash.com/800x400/?${keyword}&sig=${id}`;
+  const seed = encodeURIComponent(`${title}-${id}`);
+  return `https://picsum.photos/seed/${seed}/800/400`;
 }
 
 export default function CourseList({ refreshKey }) {
