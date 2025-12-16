@@ -74,6 +74,19 @@ export default function CourseDetails() {
     await load();
   };
 
+  // Delete course
+  const handleDeleteCourse = async () => {
+    if (!confirm("Delete this course?\nThis action cannot be undone.")) return;
+
+    try {
+      await CourseAPI.delete(course.id);
+      navigate("/");
+    } catch (err) {
+      console.error("Failed to delete course:", err);
+      alert("Failed to delete course.");
+    }
+  };
+
   // Toggle topic completion (fast toggle)
   const handleToggleTopic = async (topic) => {
     await TopicAPI.update(topic.id, {
@@ -89,28 +102,68 @@ export default function CourseDetails() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <button onClick={() => navigate("/")} className="text-blue-600 mb-4 hover:underline">
+      <button
+        onClick={() => navigate("/")}
+        className="text-blue-600 mb-4 hover:underline"
+      >
         ← Back
       </button>
 
-      <div className="mb-4">
-        <h1 className="text-3xl font-bold">{course.title}</h1>
-        <div className="text-sm text-gray-600">
-          {course.instructor} {course.provider ? `• ${course.provider}` : ""} • {course.date_joined}
+      <div className="mb-4 flex justify-between items-start gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">{course.title}</h1>
+          <div className="text-sm text-gray-600">
+            {course.instructor} {course.provider ? `• ${course.provider}` : ""}{" "}
+            • {course.date_joined}
+          </div>
         </div>
+
+        <button
+          onClick={handleDeleteCourse}
+          className="
+      px-4 py-2 rounded-lg
+      bg-red-600 text-white
+      hover:bg-red-700
+      transition
+    "
+        >
+          Delete Course
+        </button>
       </div>
 
       <div className="flex gap-3 mb-6">
-        <button onClick={() => setIsNewSectionOpen(true)} className="px-4 py-2 bg-green-600 text-white rounded">+ Add Section</button>
-        <button onClick={() => { setTargetSectionId(course.sections?.[0]?.id || null); setIsNewTopicOpen(true); }} className="px-4 py-2 bg-purple-600 text-white rounded">+ Add Topic</button>
+        <button
+          onClick={() => setIsNewSectionOpen(true)}
+          className="px-4 py-2 bg-green-600 text-white rounded"
+        >
+          + Add Section
+        </button>
+        <button
+          onClick={() => {
+            setTargetSectionId(course.sections?.[0]?.id || null);
+            setIsNewTopicOpen(true);
+          }}
+          className="px-4 py-2 bg-purple-600 text-white rounded"
+        >
+          + Add Topic
+        </button>
       </div>
 
       <SectionAccordion
         sections={course.sections || []}
-        onAddTopic={(sectionId) => { setTargetSectionId(sectionId); setIsNewTopicOpen(true); }}
-        onEditSection={(section) => { setSelectedSection(section); setIsEditSectionOpen(true); }}
+        onAddTopic={(sectionId) => {
+          setTargetSectionId(sectionId);
+          setIsNewTopicOpen(true);
+        }}
+        onEditSection={(section) => {
+          setSelectedSection(section);
+          setIsEditSectionOpen(true);
+        }}
         onDeleteSection={(sectionId) => handleDeleteSection(sectionId)}
-        onEditTopic={(topic) => { setSelectedTopic(topic); setIsEditTopicOpen(true); }}
+        onEditTopic={(topic) => {
+          setSelectedTopic(topic);
+          setIsEditTopicOpen(true);
+        }}
         onDeleteTopic={(topicId) => handleDeleteTopic(topicId)}
         onToggleTopic={handleToggleTopic}
         refresh={load}
@@ -120,22 +173,35 @@ export default function CourseDetails() {
       <NewSectionModal
         isOpen={isNewSectionOpen}
         onClose={() => setIsNewSectionOpen(false)}
-        onCreate={async (title) => { await handleCreateSection(title); setIsNewSectionOpen(false); }}
+        onCreate={async (title) => {
+          await handleCreateSection(title);
+          setIsNewSectionOpen(false);
+        }}
       />
 
       <NewTopicModal
         isOpen={isNewTopicOpen}
         sectionId={targetSectionId}
         onClose={() => setIsNewTopicOpen(false)}
-        onCreate={async (sectionId, title) => { await handleCreateTopic(sectionId, title); setIsNewTopicOpen(false); }}
+        onCreate={async (sectionId, title) => {
+          await handleCreateTopic(sectionId, title);
+          setIsNewTopicOpen(false);
+        }}
       />
 
       {selectedSection && (
         <EditSectionModal
           open={isEditSectionOpen}
           section={selectedSection}
-          onClose={() => { setIsEditSectionOpen(false); setSelectedSection(null); }}
-          onSave={async (data) => { await handleUpdateSection(data.id, { title: data.title }); setIsEditSectionOpen(false); setSelectedSection(null); }}
+          onClose={() => {
+            setIsEditSectionOpen(false);
+            setSelectedSection(null);
+          }}
+          onSave={async (data) => {
+            await handleUpdateSection(data.id, { title: data.title });
+            setIsEditSectionOpen(false);
+            setSelectedSection(null);
+          }}
         />
       )}
 
@@ -143,8 +209,18 @@ export default function CourseDetails() {
         <EditTopicModal
           open={isEditTopicOpen}
           topic={selectedTopic}
-          onClose={() => { setIsEditTopicOpen(false); setSelectedTopic(null); }}
-          onSave={async (data) => { await handleUpdateTopic(data.id, { title: data.title, description: data.description || "" }); setIsEditTopicOpen(false); setSelectedTopic(null); }}
+          onClose={() => {
+            setIsEditTopicOpen(false);
+            setSelectedTopic(null);
+          }}
+          onSave={async (data) => {
+            await handleUpdateTopic(data.id, {
+              title: data.title,
+              description: data.description || "",
+            });
+            setIsEditTopicOpen(false);
+            setSelectedTopic(null);
+          }}
         />
       )}
     </div>
