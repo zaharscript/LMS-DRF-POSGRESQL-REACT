@@ -3,6 +3,7 @@ import CourseList from "../components/CourseList";
 import NewCourseModal from "../components/NewCourseModal";
 import DashboardOverview from "../components/DashboardOverview";
 import { CourseAPI } from "../api";
+import { useAuth } from "../context/AuthContext";
 
 export default function DashboardPage() {
   const [isNewCourseOpen, setIsNewCourseOpen] = useState(false);
@@ -43,6 +44,8 @@ export default function DashboardPage() {
     }
   };
 
+  const { user } = useAuth();
+
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
       {/* CENTER CONTENT */}
@@ -67,7 +70,7 @@ export default function DashboardPage() {
         {!loading && (
           <DashboardOverview
             courses={courses}
-            user={{ name: "Alex Smith", streak: 15 }}
+            user={{ name: user?.username, streak: user?.streak || 0 }}
           />
         )}
 
