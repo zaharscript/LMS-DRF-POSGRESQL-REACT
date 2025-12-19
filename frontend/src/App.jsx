@@ -1,20 +1,48 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import MainLayout from "./layout/MainLayout";
 import DashboardPage from "./pages/DashboardPage";
 import CourseDetails from "./pages/CourseDetails";
+import LoginPage from "./pages/LoginPage";
+
+import ProtectedRoute from "./routes/ProtectedRoute";
 import { ThemeProvider } from "./context/ThemeContext";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
     <ThemeProvider>
-      <Router>
-        <MainLayout>
+      <AuthProvider>
+        <Router>
           <Routes>
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/course/:id" element={<CourseDetails />} />
+            {/* PUBLIC ROUTE */}
+            <Route path="/login" element={<LoginPage />} />
+
+            {/* PROTECTED ROUTES */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <DashboardPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/course/:id"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <CourseDetails />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
           </Routes>
-        </MainLayout>
-      </Router>
+        </Router>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

@@ -23,6 +23,14 @@ export const CourseAPI = {
   delete: (id) => api.delete(`courses/${id}/`),
 };
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export const SectionAPI = {
   list: () => api.get("sections/"),
   create: (data) => api.post("sections/", data),
