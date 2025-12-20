@@ -1,15 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
 import MainLayout from "./layout/MainLayout";
 import DashboardPage from "./pages/DashboardPage";
 import CourseDetails from "./pages/CourseDetails";
 import LoginPage from "./pages/LoginPage";
-
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
-import RegisterPage from "./pages/RegisterPage";
-
 
 function App() {
   return (
@@ -17,12 +13,11 @@ function App() {
       <AuthProvider>
         <Router>
           <Routes>
-            {/* PUBLIC ROUTE */}
+
+            {/* PUBLIC */}
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
 
-
-            {/* PROTECTED ROUTES */}
+            {/* PROTECTED */}
             <Route
               path="/"
               element={
@@ -44,6 +39,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
           </Routes>
         </Router>
       </AuthProvider>
