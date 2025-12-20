@@ -8,6 +8,8 @@ import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
+import RegisterPage from "./pages/RegisterPage";
+
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
           <Routes>
             {/* PUBLIC ROUTE */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+
 
             {/* PROTECTED ROUTES */}
             <Route
