@@ -1,4 +1,3 @@
-// src/components/Sidebar.jsx
 import {
   Home,
   BookOpen,
@@ -13,10 +12,12 @@ import {
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import useTheme from "../hooks/useTheme";
+import { useAuth } from "../context/AuthContext";
 import sidebarBg from "../assets/sidebar-bg.jpg";
 
 export default function Sidebar() {
   const { theme, toggleTheme } = useTheme();
+  const { logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
   const menu = [
@@ -57,9 +58,6 @@ export default function Sidebar() {
         {/* GRADIENT OVERLAY */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/80" />
 
-        {/* SOFT GLOW */}
-        <div className="absolute inset-0 ring-1 ring-indigo-400/20 shadow-[0_0_40px_rgba(99,102,241,0.15)]" />
-
         {/* CONTENT */}
         <div className="relative h-full flex flex-col justify-between p-6 backdrop-blur-sm text-white">
           {/* CLOSE (MOBILE) */}
@@ -72,18 +70,14 @@ export default function Sidebar() {
 
           {/* TOP */}
           <div>
-            <h1 className="hidden md:block text-2xl font-bold mb-8 tracking-tight drop-shadow-lg">
+            <h1 className="hidden md:block text-2xl font-bold mb-8 tracking-tight">
               Study<span className="text-indigo-400">Plan</span>
             </h1>
 
             {/* THEME TOGGLE */}
             <button
               onClick={toggleTheme}
-              className="
-                flex items-center gap-2 px-3 py-2 mb-6 rounded-lg
-                bg-white/15 hover:bg-white/25
-                transition backdrop-blur-md
-              "
+              className="flex items-center gap-2 px-3 py-2 mb-6 rounded-lg bg-white/15 hover:bg-white/25 transition"
             >
               {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
               <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
@@ -99,27 +93,34 @@ export default function Sidebar() {
                   className={({ isActive }) =>
                     `
                       group flex items-center gap-3 px-4 py-2 rounded-xl
-                      font-medium backdrop-blur-md transition-all
+                      font-medium transition
                       ${
                         isActive
-                          ? "bg-white/35 text-indigo-300 shadow-lg"
-                          : "text-gray-200 hover:bg-white/20 hover:text-white"
+                          ? "bg-white/35 text-indigo-300"
+                          : "text-gray-200 hover:bg-white/20"
                       }
                     `
                   }
                 >
-                  <span className="group-hover:scale-110 transition-transform">
-                    {item.icon}
-                  </span>
+                  {item.icon}
                   {item.label}
                 </NavLink>
               ))}
             </nav>
           </div>
 
-          {/* FOOTER */}
-          <div className="text-xs text-gray-300 drop-shadow">
-            © {new Date().getFullYear()} StudyPlan
+          {/* FOOTER + LOGOUT */}
+          <div>
+            <button
+              onClick={logout}
+              className="mb-4 w-full px-4 py-2 rounded-xl bg-red-600/80 hover:bg-red-600 transition"
+            >
+              Logout
+            </button>
+
+            <div className="text-xs text-gray-300 text-center">
+              © {new Date().getFullYear()} StudyPlan
+            </div>
           </div>
         </div>
       </aside>
