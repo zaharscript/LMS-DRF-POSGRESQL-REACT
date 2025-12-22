@@ -1,15 +1,15 @@
 // src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { ThemeProvider } from "./context/ThemeContext"; // if you have one
+import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import GuestRoute from "./components/GuestRoute";
 
-import Dashboard from "./pages/Dashboard";
-import Courses from "./pages/Courses";
-import Login from "./pages/Login";
-import NotFound from "./pages/NotFound";
+import DashboardPage from "./pages/DashboardPage";
+import CourseDetails from "./pages/CourseDetails";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 
 function App() {
   return (
@@ -17,36 +17,44 @@ function App() {
       <Router>
         <AuthProvider>
           <Routes>
-            {/* Protected routes */}
+            {/* Protected Routes */}
             <Route
               path="/"
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <DashboardPage />
                 </ProtectedRoute>
               }
             />
             <Route
-              path="/courses"
+              path="/courses/:id"
               element={
                 <ProtectedRoute>
-                  <Courses />
+                  <CourseDetails />
                 </ProtectedRoute>
               }
             />
 
-            {/* Guest routes */}
+            {/* Guest Routes */}
             <Route
               path="/login"
               element={
                 <GuestRoute>
-                  <Login />
+                  <LoginPage />
+                </GuestRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <GuestRoute>
+                  <RegisterPage />
                 </GuestRoute>
               }
             />
 
-            {/* Fallback route */}
-            <Route path="*" element={<NotFound />} />
+            {/* Optional fallback */}
+            <Route path="*" element={<p>404 - Page Not Found</p>} />
           </Routes>
         </AuthProvider>
       </Router>
