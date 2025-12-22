@@ -1,48 +1,55 @@
+// src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import MainLayout from "./layout/MainLayout";
-import DashboardPage from "./pages/DashboardPage";
-import CourseDetails from "./pages/CourseDetails";
-import LoginPage from "./pages/LoginPage";
-import ProtectedRoute from "./routes/ProtectedRoute";
-import { ThemeProvider } from "./context/ThemeContext";
+import { ThemeProvider } from "./context/ThemeContext"; // if you have one
 import { AuthProvider } from "./context/AuthContext";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import GuestRoute from "./components/GuestRoute";
+
+import Dashboard from "./pages/Dashboard";
+import Courses from "./pages/Courses";
+import Login from "./pages/Login";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <Router>
+      <Router>
+        <AuthProvider>
           <Routes>
-
-            {/* PUBLIC */}
-            <Route path="/login" element={<LoginPage />} />
-
-            {/* PROTECTED */}
+            {/* Protected routes */}
             <Route
               path="/"
               element={
                 <ProtectedRoute>
-                  <MainLayout>
-                    <DashboardPage />
-                  </MainLayout>
+                  <Dashboard />
                 </ProtectedRoute>
               }
             />
-
             <Route
-              path="/course/:id"
+              path="/courses"
               element={
                 <ProtectedRoute>
-                  <MainLayout>
-                    <CourseDetails />
-                  </MainLayout>
+                  <Courses />
                 </ProtectedRoute>
               }
             />
 
+            {/* Guest routes */}
+            <Route
+              path="/login"
+              element={
+                <GuestRoute>
+                  <Login />
+                </GuestRoute>
+              }
+            />
+
+            {/* Fallback route */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
-        </Router>
-      </AuthProvider>
+        </AuthProvider>
+      </Router>
     </ThemeProvider>
   );
 }

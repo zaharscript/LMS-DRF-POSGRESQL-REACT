@@ -1,42 +1,74 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api";
 
 const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
+  const navigate = useNavigate();
+  const [accessToken, setAccessToken] = useState(() =>
+    localStorage.getItem("access")
+  );
+  const [refreshToken, setRefreshToken] = useState(() =>
+    localStorage.getItem("refresh")
+  );
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("accessToken"));
 
+  const isAuthenticated = !!accessToken;
+
+  // Load user on mount or when accessToken changes
   useEffect(() => {
-    if (token) loadUser();
-  }, [token]);
+    if (accessToken) loadUser();
+    else setUser(null);
+  }, [accessToken]);
 
   const loadUser = async () => {
     try {
       const res = await api.get("/me/");
       setUser(res.data);
-    } catch {
+    } catch (err) {
+      console.error("Failed to load user:", err);
       logout();
     }
   };
 
   const login = async (username, password) => {
-    const res = await api.post("/token/", { username, password });
-    localStorage.setItem("accessToken", res.data.access);
-    setToken(res.data.access);
+    try {
+      const res = await api.post("/token/", { username, password });
+      localStorage.setItem("access", res.data.access);
+      localStorage.setItem("refresh", res.data.refresh);
+      setAccessToken(res.data.access);
+      setRefreshToken(res.data.refresh);
+      await loadUser();
+      navigate("/");
+    } catch (err) {
+      console.error("Login failed:", err);
+    }
   };
 
   const logout = () => {
-    localStorage.removeItem("accessToken");
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    setAccessToken(null);
+    setRefreshToken(null);
     setUser(null);
-    setToken(null);
+    navigate("/login");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated,
+        accessToken,
+        refreshToken,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
 export const useAuth = () => useContext(AuthContext);
