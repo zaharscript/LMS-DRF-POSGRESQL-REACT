@@ -13,6 +13,7 @@ from .views import (
     TopicDetailView,
 )
 
+
 urlpatterns = [
     # 🔐 Auth / User
     path("register/", RegisterView.as_view(), name="register"),
@@ -29,4 +30,7 @@ urlpatterns = [
     # 🧩 Topics
     path("topics/", TopicListCreateView.as_view(), name="topic-list"),
     path("topics/<int:pk>/", TopicDetailView.as_view(), name="topic-detail"),
+
+
+   
 ]
