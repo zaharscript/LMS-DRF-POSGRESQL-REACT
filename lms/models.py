@@ -1,16 +1,26 @@
 from django.db import models
 
 
+from django.conf import settings
+
 class Course(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="courses",
+        null=True,
+        blank=True
+    )
+
     title = models.CharField(max_length=255)
     instructor = models.CharField(max_length=255)
     provider = models.CharField(max_length=255, blank=True, null=True)
     date_joined = models.DateField()
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
+
 
 
 class Section(models.Model):
