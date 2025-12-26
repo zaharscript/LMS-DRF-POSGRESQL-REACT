@@ -50,7 +50,7 @@ export default function CourseList({ refreshKey }) {
         return (
           <div
             key={c.id}
-            onClick={() => navigate(`/course/${c.id}`)}
+            onClick={() => navigate(`/courses/${c.id}`)}
             className="relative rounded-lg overflow-hidden shadow hover:shadow-lg cursor-pointer transition"
           >
             {/* Image */}
