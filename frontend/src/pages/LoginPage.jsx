@@ -27,7 +27,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-100">
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-100">
       {/* LEFT IMAGE / BRAND */}
       <div
         className="hidden md:flex w-1/2 bg-cover bg-center relative"
@@ -41,6 +41,23 @@ export default function LoginPage() {
           <h1 className="text-4xl font-bold mb-4">StudyPlan</h1>
           <p className="text-lg opacity-90">
             Build meaningful learning habits and track your progress.
+          </p>
+        </div>
+      </div>
+
+      {/* MOBILE HERO IMAGE */}
+      <div
+        className="md:hidden w-full h-56 bg-cover bg-center relative"
+        style={{
+          backgroundImage:
+            "url(https://images.unsplash.com/photo-1498079022511-d15614cb1c02)",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="relative z-10 p-6 text-white">
+          <h1 className="text-3xl font-bold">StudyPlan</h1>
+          <p className="text-sm opacity-90">
+            Learn smarter. Track your progress. Stay consistent.
           </p>
         </div>
       </div>
