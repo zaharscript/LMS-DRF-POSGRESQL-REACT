@@ -10,6 +10,7 @@ import DashboardPage from "./pages/DashboardPage";
 import CourseDetails from "./pages/CourseDetails";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import MainLayout from "./layout/MainLayout";
 
 function App() {
   return (
@@ -22,7 +23,9 @@ function App() {
               path="/"
               element={
                 <ProtectedRoute>
-                  <DashboardPage />
+                  <MainLayout>
+                    <DashboardPage />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
