@@ -30,4 +30,11 @@ urlpatterns = [
     # Auth (JWT)
      path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
      path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+     #Login with google
+    path('auth/', include('dj_rest_auth.urls')),
+    path('auth/registration/', include('dj_rest_auth.registration.urls')),
+    path('auth/social/google/', include('allauth.socialaccount.providers.google.urls')),
+    path('auth/social/', include('dj_rest_auth.social_accounts.urls')),
+    path('auth/google/', include('dj_rest_auth.social_accounts.urls')),
 ]
