@@ -11,3 +11,4 @@ tzdata==2025.2
 whitenoise==6.11.0
 dj_database_url==1.2.0
 djangorestframework-simplejwt
+django-allauth
