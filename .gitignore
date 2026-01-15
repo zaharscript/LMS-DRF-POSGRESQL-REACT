@@ -1,5 +1,31 @@
-venv/
-node_modules/
+# ---------- Python ----------
 __pycache__/
-dist/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
 .env
+.env.*
+
+# Django
+db.sqlite3
+*.sqlite3
+media/
+staticfiles/
+
+# Logs
+*.log
+
+# ---------- Frontend / Node ----------
+node_modules/
+dist/
+build/
+
+# Vite / React
+.vite/
+
+# ---------- OS ----------
+.DS_Store
+Thumbs.db

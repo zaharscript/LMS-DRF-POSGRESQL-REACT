@@ -25,7 +25,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'django.contrib.sites',
+    "django.contrib.sites",
+    "rest_framework.authtoken",
 
     'allauth',
     'allauth.account',
@@ -55,25 +56,35 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+
+    "allauth.account.middleware.AccountMiddleware",
+
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
+
 
 ROOT_URLCONF = "backend.urls"
 
 # ------------------------------------------------------------------------------
 # DATABASE CONFIG (12-factor)
 # ------------------------------------------------------------------------------
-# Default → SQLite (local development)
+# Default → postgreSQL (local development)
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST", "localhost"),
+        "PORT": os.getenv("POSTGRES_PORT", "5432"),
     }
 }
+
 
 # If Render provides DATABASE_URL → switch to PostgreSQL automatically
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -152,4 +163,11 @@ REST_FRAMEWORK = {
     ),
 }
 
-    
+REST_AUTH = {
+    "USE_JWT": True,
+    "TOKEN_MODEL": None,
+}
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
