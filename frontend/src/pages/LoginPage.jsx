@@ -20,7 +20,8 @@ export default function LoginPage() {
       await login(email, password);
       navigate("/"); // dashboard
     } catch (err) {
-      setError("Invalid email or password");
+      console.log(err.response?.data);
+      setError(JSON.stringify(err.response?.data));
     } finally {
       setLoading(false);
     }
