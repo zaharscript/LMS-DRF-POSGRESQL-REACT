@@ -171,3 +171,14 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )
+
+# ------------------------------------------------------------------------------
+# CORS AND CSRF SETTINGS
+# ------------------------------------------------------------------------------
+
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://mystudyplan25.netlify.app",
+]

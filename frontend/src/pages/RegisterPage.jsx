@@ -27,13 +27,13 @@ export default function RegisterPage() {
       });
 
       // 2️⃣ auto-login
-      await login(username, password);
+      await login(email, password);
 
       navigate("/");
     } catch (err) {
       setError(
         err.response?.data?.detail ||
-        "Registration failed. Try another username."
+          "Registration failed. Try another username."
       );
     } finally {
       setLoading(false);

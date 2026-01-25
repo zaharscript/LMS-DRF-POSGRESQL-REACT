@@ -6,52 +6,68 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
-  const [accessToken, setAccessToken] = useState(() =>
+
+  const [accessToken, setAccessToken] = useState(
     localStorage.getItem("access")
   );
-  const [refreshToken, setRefreshToken] = useState(() =>
+  const [refreshToken, setRefreshToken] = useState(
     localStorage.getItem("refresh")
   );
   const [user, setUser] = useState(null);
 
   const isAuthenticated = !!accessToken;
 
-  // Load user on mount or when accessToken changes
+  // Load user when token changes
   useEffect(() => {
-    if (accessToken) loadUser();
-    else setUser(null);
+    if (accessToken) {
+      loadUser();
+    } else {
+      setUser(null);
+    }
   }, [accessToken]);
 
+  // ✅ dj-rest-auth user endpoint
   const loadUser = async () => {
     try {
-      const res = await api.get("/me/");
+      const res = await api.get("/auth/user/");
       setUser(res.data);
     } catch (err) {
-      console.error("Failed to load user:", err);
+      console.error("Failed to load user", err);
       logout();
     }
   };
 
-  const login = async (username, password) => {
+  // ✅ dj-rest-auth login (EMAIL + PASSWORD)
+  const login = async (email, password) => {
     try {
-      const res = await api.post("/token/", { username, password });
-      localStorage.setItem("access", res.data.access);
-      localStorage.setItem("refresh", res.data.refresh);
-      setAccessToken(res.data.access);
-      setRefreshToken(res.data.refresh);
-      await loadUser();
+      const res = await api.post("/auth/login/", {
+        email,
+        password,
+      });
+
+      const { access_token, refresh_token } = res.data;
+
+      localStorage.setItem("access", access_token);
+      localStorage.setItem("refresh", refresh_token);
+
+      setAccessToken(access_token);
+      setRefreshToken(refresh_token);
+
       navigate("/");
     } catch (err) {
-      console.error("Login failed:", err);
+      console.error("Login failed", err);
+      throw err;
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
+
     setAccessToken(null);
     setRefreshToken(null);
     setUser(null);
+
     navigate("/login");
   };
 
