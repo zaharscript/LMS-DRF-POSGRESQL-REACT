@@ -44,12 +44,27 @@ INSTALLED_APPS = [
     # Your apps
     "lms",
 ]
-SITE_ID = 1
+SITE_ID = 2
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "offline",
+            "prompt": "consent",
+        },
+    },
+}
+
+SOCIALACCOUNT_ADAPTER = "allauth.socialaccount.adapter.DefaultSocialAccountAdapter"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -98,7 +113,13 @@ if DATABASE_URL:
 # ------------------------------------------------------------------------------
 # CORS
 # ------------------------------------------------------------------------------
-CORS_ALLOW_ALL_ORIGINS = True
+# ------------------------------------------------------------------------------
+# CORS
+# ------------------------------------------------------------------------------
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5174",
+    "https://mystudyplan25.netlify.app",
+]
 
 # ------------------------------------------------------------------------------
 # STATIC FILES (Render-compatible)
@@ -165,8 +186,20 @@ REST_FRAMEWORK = {
 
 REST_AUTH = {
     "USE_JWT": True,
+    "JWT_AUTH_HTTPONLY": False,
+    "JWT_AUTH_COOKIE": "jwt-auth",
+    "JWT_AUTH_REFRESH_COOKIE": "jwt-refresh-token",
     "TOKEN_MODEL": None,
     "LOGIN_SERIALIZER": "dj_rest_auth.serializers.LoginSerializer",
+}
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': False,
+    'UPDATE_LAST_LOGIN': True,
 }
 
 ACCOUNT_AUTHENTICATION_METHOD = "email"
@@ -186,5 +219,6 @@ AUTHENTICATION_BACKENDS = (
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5174",
     "https://mystudyplan25.netlify.app",
 ]

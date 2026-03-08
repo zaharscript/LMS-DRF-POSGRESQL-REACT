@@ -8,6 +8,7 @@ from .views import (
 
     SectionListCreateView,
     SectionDetailView,
+    GoogleLoginView,
 
     TopicListCreateView,
     TopicDetailView,
@@ -31,6 +32,8 @@ urlpatterns = [
     path("topics/", TopicListCreateView.as_view(), name="topic-list"),
     path("topics/<int:pk>/", TopicDetailView.as_view(), name="topic-detail"),
 
+
+    #path('auth/google/', GoogleLoginView.as_view(), name='google_login'),
 
    
 ]

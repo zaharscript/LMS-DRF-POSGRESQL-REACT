@@ -1,9 +1,14 @@
 #lms/views.py
+import os
 from rest_framework import generics, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.auth.models import User
+
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.views import SocialLoginView
 
 from .models import Course, Section, Topic
 from .serializers import (
@@ -32,6 +37,20 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
+
+
+class GoogleLoginView(SocialLoginView):
+    """Receives 'code' from React frontend, exchanges for JWT via SimpleJWT."""
+    adapter_class = GoogleOAuth2Adapter
+    client_class = OAuth2Client
+    callback_url = os.getenv("GOOGLE_OAUTH_CALLBACK_URL", "http://localhost:5174/login/callback")
+
+    def post(self, request, *args, **kwargs):
+        try:
+            return super().post(request, *args, **kwargs)
+        except Exception as exc:
+            print("GoogleLoginView error:", exc)
+            raise
 
 
 # -------------------------
