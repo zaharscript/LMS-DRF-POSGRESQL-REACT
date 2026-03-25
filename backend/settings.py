@@ -69,6 +69,7 @@ SOCIALACCOUNT_PROVIDERS = {
             "access_type": "offline",
             "prompt": "consent",
         },
+        "CALLBACK_URL": "https://mystudyplan25.netlify.app/login/callback",
     },
 }
 
@@ -132,7 +133,7 @@ CORS_ALLOWED_ORIGINS = [
 # STATIC FILES (Render-compatible)
 # ------------------------------------------------------------------------------
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # ------------------------------------------------------------------------------
