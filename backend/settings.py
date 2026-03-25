@@ -51,8 +51,7 @@ ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 
-# Add this to ensure new users are created automatically without errors
-SOCIALACCOUNT_AUTO_SIGNUP = True 
+
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
@@ -126,6 +125,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5174",
     "http://127.0.0.1:3000",
+    "https://mystudyplan25.netlify.app",
 ]
 
 # ------------------------------------------------------------------------------

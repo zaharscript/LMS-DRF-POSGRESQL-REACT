@@ -29,8 +29,9 @@ export default function LoginPage() {
 
   const handleGoogleLogin = () => {
     const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
+    const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
     const options = {
-      redirect_uri: "http://127.0.0.1:5174/login/callback",
+      redirect_uri: `${FRONTEND_URL}/login/callback`,
       client_id:
         "137033813427-l1966kkdvbt8dgmlqos2gsbd3dohdau6.apps.googleusercontent.com",
       access_type: "offline",

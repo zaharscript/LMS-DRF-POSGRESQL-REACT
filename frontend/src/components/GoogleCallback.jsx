@@ -23,9 +23,10 @@ const GoogleCallback = () => {
     initialized.current = true;
 
     // 2. Send the authorization code to your Django backend
+    const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
     console.log("SENDING CODE TO BACKEND:", code);
     axios
-      .post("http://127.0.0.1:8000/api/auth/google/", { code })
+      .post(`${API_BASE_URL}/api/auth/google/`, { code })
       .then((response) => {
         // 3. Success! Extract JWT tokens
         // dj-rest-auth usually returns 'access' and 'refresh'
