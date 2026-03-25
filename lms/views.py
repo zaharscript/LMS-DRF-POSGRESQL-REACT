@@ -43,7 +43,10 @@ class GoogleLoginView(SocialLoginView):
     """Receives 'code' from React frontend, exchanges for JWT via SimpleJWT."""
     adapter_class = GoogleOAuth2Adapter
     client_class = OAuth2Client
-    callback_url = os.getenv("GOOGLE_OAUTH_CALLBACK_URL", "http://localhost:5174/login/callback")
+    callback_url = os.getenv(
+        "GOOGLE_OAUTH_CALLBACK_URL",
+        "http://127.0.0.1:5174/login/callback",
+    )
 
     def post(self, request, *args, **kwargs):
         try:

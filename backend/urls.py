@@ -24,7 +24,6 @@ from lms.views import GoogleLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
     path('api/', include('lms.urls')),
 
     # ✅ move auth under /api/
@@ -34,7 +33,9 @@ urlpatterns = [
 
     # JWT
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # Used by frontend
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    path('accounts/', include('allauth.urls')), # Used by frontend
 ]
 
 

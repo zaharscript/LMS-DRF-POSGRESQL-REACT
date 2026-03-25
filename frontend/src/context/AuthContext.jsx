@@ -1,11 +1,12 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [accessToken, setAccessToken] = useState(
     localStorage.getItem("access")
@@ -19,12 +20,18 @@ export const AuthProvider = ({ children }) => {
 
   // Load user when token changes
   useEffect(() => {
+    // Avoid interrupting the Google callback flow by trying to validate
+    // a potentially-stale access token while the callback route is active.
+    if (location.pathname === "/login/callback") {
+      return;
+    }
+
     if (accessToken) {
       loadUser();
     } else {
       setUser(null);
     }
-  }, [accessToken]);
+  }, [accessToken, location.pathname]);
 
   // ✅ dj-rest-auth user endpoint
   const loadUser = async () => {
@@ -33,7 +40,10 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data);
     } catch (err) {
       console.error("Failed to load user", err);
-      logout();
+      // If the Google callback route is active, don't force logout.
+      if (location.pathname !== "/login/callback") {
+        logout();
+      }
     }
   };
 

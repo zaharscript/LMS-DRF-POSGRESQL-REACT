@@ -1,54 +1,63 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const GoogleCallback = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const initialized = useRef(false);
 
   useEffect(() => {
     // 1. Extract the 'code' from the URL returned by Google
     const params = new URLSearchParams(location.search);
     const code = params.get("code");
 
-    if (code) {
-      // 2. Send the authorization code to your Django backend
-      axios
-        .post("http://localhost:8000/api/auth/google/", {
-          code: code,
-        })
-        .then((response) => {
-          // 3. Success! Extract JWT tokens
-          // dj-rest-auth usually returns 'access' and 'refresh'
-          const { refresh, access } = response.data;
-
-          // Fallback in case your backend uses 'access_token' naming
-          const accessToken = access || response.data.access_token;
-
-          if (accessToken) {
-            localStorage.setItem("access_token", accessToken);
-            localStorage.setItem("refresh_token", refresh);
-
-            // 4. Redirect to home/dashboard
-            // Using window.location.href forces a reload so AuthContext
-            // can pick up the new tokens from localStorage immediately.
-            window.location.href = "/";
-          } else {
-            console.error("No access token received from backend");
-            navigate("/login?error=no_token");
-          }
-        })
-        .catch((error) => {
-          console.error(
-            "Google Auth Failed:",
-            error.response?.data || error.message,
-          );
-          navigate("/login?error=auth_failed");
-        });
-    } else {
+    if (!code) {
       // No code found in URL
       navigate("/login");
+      return;
     }
+
+    // Safety: ensure the backend call runs exactly once per mount.
+    if (initialized.current) return;
+    initialized.current = true;
+
+    // 2. Send the authorization code to your Django backend
+    console.log("SENDING CODE TO BACKEND:", code);
+    axios
+      .post("http://127.0.0.1:8000/api/auth/google/", { code })
+      .then((response) => {
+        // 3. Success! Extract JWT tokens
+        // dj-rest-auth usually returns 'access' and 'refresh'
+        const refresh = response.data.refresh || response.data.refresh_token;
+        const access =
+          response.data.access || response.data.access_token;
+
+        if (!access || !refresh) {
+          console.error("Missing tokens received from backend", response.data);
+          navigate("/login?error=no_token");
+          return;
+        }
+
+        // 4. Save tokens for your AuthProvider (expects access/refresh)
+        localStorage.setItem("access", access);
+        localStorage.setItem("refresh", refresh);
+
+        // Also store alternative keys in case other parts of the app expect them.
+        localStorage.setItem("access_token", access);
+        localStorage.setItem("refresh_token", refresh);
+
+        // Force reload so AuthContext picks up updated localStorage immediately.
+        window.location.href = "/";
+      })
+      .catch((error) => {
+        console.error(
+          "Google Auth Failed:",
+          error.response?.status,
+          error.response?.data || error.message,
+        );
+        navigate("/login?error=auth_failed");
+      });
   }, [location, navigate]);
 
   return (
