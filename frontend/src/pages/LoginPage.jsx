@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { GOOGLE_REDIRECT_URI } from "../api";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -29,9 +30,8 @@ export default function LoginPage() {
 
   const handleGoogleLogin = () => {
     const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
-    const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
     const options = {
-      redirect_uri: `${FRONTEND_URL}/login/callback`,
+      redirect_uri: GOOGLE_REDIRECT_URI,
       client_id:
         "137033813427-l1966kkdvbt8dgmlqos2gsbd3dohdau6.apps.googleusercontent.com",
       access_type: "offline",

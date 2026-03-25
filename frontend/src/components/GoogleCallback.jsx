@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from "../api";
 
 const GoogleCallback = () => {
   const location = useLocation();
@@ -23,7 +24,6 @@ const GoogleCallback = () => {
     initialized.current = true;
 
     // 2. Send the authorization code to your Django backend
-    const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
     console.log("SENDING CODE TO BACKEND:", code);
     axios
       .post(`${API_BASE_URL}/api/auth/google/`, { code })

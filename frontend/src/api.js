@@ -1,11 +1,13 @@
 import axios from "axios";
 
-const BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+export const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+export const API_BASE_URL = isLocal ? "http://127.0.0.1:8000" : import.meta.env.VITE_API_URL;
+export const GOOGLE_REDIRECT_URI = isLocal ? "http://localhost:5174/login/callback" : "https://mystudyplan25.netlify.app/login/callback";
 
-console.log("🔥 API Base URL:", BASE);
+console.log("🔥 API Base URL:", API_BASE_URL);
 
 const api = axios.create({
-  baseURL: `${BASE.replace(/\/$/, "")}/api/`,
+  baseURL: `${API_BASE_URL.replace(/\/$/, "")}/api/`,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -37,7 +39,7 @@ api.interceptors.response.use(
 
       try {
         // Call your refresh token endpoint
-        const res = await axios.post(`${BASE}/api/token/refresh/`, {
+        const res = await axios.post(`${API_BASE_URL}/api/token/refresh/`, {
           refresh: refreshToken,
         });
 
