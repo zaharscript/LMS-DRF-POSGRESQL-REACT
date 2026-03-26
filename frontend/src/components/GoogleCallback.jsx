@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { API_BASE_URL } from "../api";
+import { API_BASE_URL, GOOGLE_REDIRECT_URI } from "../api";
 
 const GoogleCallback = () => {
   const location = useLocation();
@@ -26,7 +26,10 @@ const GoogleCallback = () => {
     // 2. Send the authorization code to your Django backend
     console.log("SENDING CODE TO BACKEND:", code);
     axios
-      .post(`${API_BASE_URL}/api/auth/google/`, { code })
+      .post(`${API_BASE_URL}/api/auth/google/`, {
+        code: code,
+        callback_url: GOOGLE_REDIRECT_URI
+      })
       .then((response) => {
         // 3. Success! Extract JWT tokens
         // dj-rest-auth usually returns 'access' and 'refresh'
