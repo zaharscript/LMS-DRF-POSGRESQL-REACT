@@ -53,13 +53,23 @@ ACCOUNT_USERNAME_REQUIRED = False
 
 
 
+# Check if we are running on Render (Production)
+IS_PRODUCTION = os.getenv('RENDER') is not None
+
+if IS_PRODUCTION:
+    # Production (Live Site)
+    CALLBACK_URL = "https://mystudyplan25.netlify.app/login/callback"
+else:
+    # Local Development (Example port 5174)
+    CALLBACK_URL = "http://localhost:5174/login/callback"
+
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "APP": {
             "client_id": os.getenv("GOOGLE_CLIENT_ID"),
             "secret": os.getenv("GOOGLE_CLIENT_SECRET"),
             "key": "",
-            "sites": [1]  # This must match your SITE_ID
+            "sites": [1] 
         },
         "SCOPE": [
             "profile",
@@ -69,7 +79,7 @@ SOCIALACCOUNT_PROVIDERS = {
             "access_type": "offline",
             "prompt": "consent",
         },
-        "CALLBACK_URL": "https://mystudyplan25.netlify.app/login/callback",
+        "CALLBACK_URL": CALLBACK_URL,
     },
 }
 
