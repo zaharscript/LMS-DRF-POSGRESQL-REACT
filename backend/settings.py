@@ -101,31 +101,32 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "backend.urls"
 
+# # ------------------------------------------------------------------------------
+# DATABASE CONFIG
 # ------------------------------------------------------------------------------
-# DATABASE CONFIG (12-factor)
-# ------------------------------------------------------------------------------
-# Default → postgreSQL (local development)
+
+# 1. Start with Local Defaults
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB"),
-        "USER": os.getenv("POSTGRES_USER"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "NAME": os.getenv("POSTGRES_DB", "lms_local"),
+        "USER": os.getenv("POSTGRES_USER", "postgres"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", ""),
         "HOST": os.getenv("POSTGRES_HOST", "localhost"),
         "PORT": os.getenv("POSTGRES_PORT", "5432"),
     }
 }
 
-
-# If Render provides DATABASE_URL → switch to PostgreSQL automatically
+# 2. Override with DATABASE_URL if it exists and is not empty
 DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL:
-    DATABASES["default"] = dj_database_url.parse(
-        DATABASE_URL,
+
+if DATABASE_URL and DATABASE_URL.strip():
+    DATABASES["default"] = dj_database_url.config(
+        default=DATABASE_URL,
         conn_max_age=600,
         conn_health_checks=True,
+        ssl_require=True,  # Critical for Neon and Render Production
     )
-
 # ------------------------------------------------------------------------------
 # CORS
 # ------------------------------------------------------------------------------
