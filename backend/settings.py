@@ -6,6 +6,7 @@ import dj_database_url
 
 load_dotenv()
 
+print(f"DEBUG CHECK: ALLOWED_HOSTS is currently: {os.getenv('ALLOWED_HOSTS')}")
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ------------------------------------------------------------------------------
@@ -13,8 +14,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ------------------------------------------------------------------------------
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
 DEBUG = os.getenv("DEBUG", "True") == "True"
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
-
+# ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",") if host.strip()]
+# Temporary hardcode for local testing
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'lms-drf-posgresql-react.onrender.com']
 # ------------------------------------------------------------------------------
 # APPLICATIONS
 # ------------------------------------------------------------------------------
@@ -47,9 +49,8 @@ INSTALLED_APPS = [
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_EMAIL_VERIFICATION = "none"
-ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 
 
 
@@ -60,8 +61,8 @@ if IS_PRODUCTION:
     # Production (Live Site)
     CALLBACK_URL = "https://mystudyplan25.netlify.app/login/callback"
 else:
-    # Local Development (Example port 5174)
-    CALLBACK_URL = "http://localhost:5174/login/callback"
+    # Local Development (Example port 5174
+    CALLBACK_URL = "http://127.0.0.1:5174/login/callback"
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
@@ -136,7 +137,9 @@ if DATABASE_URL and DATABASE_URL.strip():
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5174",
+    "http://localhost:5174",
     "http://127.0.0.1:3000",
+    "http://localhost:3000",
     "https://mystudyplan25.netlify.app",
 ]
 
@@ -225,9 +228,8 @@ SIMPLE_JWT = {
 # and create the user record immediately
 SOCIALACCOUNT_AUTO_SIGNUP = True
 
-ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
@@ -254,6 +256,7 @@ CORS_ALLOW_HEADERS = [
 
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:5174",
+    "http://localhost:5174",
     "https://mystudyplan25.netlify.app",
 ]
 

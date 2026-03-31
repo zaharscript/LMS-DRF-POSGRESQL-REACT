@@ -45,11 +45,14 @@ class GoogleLoginView(SocialLoginView):
     client_class = OAuth2Client
 
     def post(self, request, *args, **kwargs):
-        try:
-            return super().post(request, *args, **kwargs)
-        except Exception as exc:
-            print("GoogleLoginView error:", exc)
-            raise
+        with open("oauth_debug.txt", "a") as f:
+            f.write(f"\n--- NEW REQUEST ---\n")
+            f.write(f"Data: {request.data}\n")
+        response = super().post(request, *args, **kwargs)
+        if response.status_code >= 400:
+            with open("oauth_debug.txt", "a") as f:
+                f.write(f"ERROR Response: {response.data}\n")
+        return response
 
 
 # -------------------------

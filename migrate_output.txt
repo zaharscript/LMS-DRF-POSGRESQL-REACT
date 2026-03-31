@@ -1,0 +1,11 @@
+D:\LMS-DRF-POSGRESQL-REACT\venv\Lib\site-packages\dj_rest_auth\registration\serializers.py:225: UserWarning: app_settings.USERNAME_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['username']['required']
+  required=allauth_account_settings.USERNAME_REQUIRED,
+D:\LMS-DRF-POSGRESQL-REACT\venv\Lib\site-packages\dj_rest_auth\registration\serializers.py:227: UserWarning: app_settings.EMAIL_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['email']['required']
+  email = serializers.EmailField(required=allauth_account_settings.EMAIL_REQUIRED)
+D:\LMS-DRF-POSGRESQL-REACT\venv\Lib\site-packages\dj_rest_auth\registration\serializers.py:285: UserWarning: app_settings.EMAIL_REQUIRED is deprecated, use: app_settings.SIGNUP_FIELDS['email']['required']
+  email = serializers.EmailField(required=allauth_account_settings.EMAIL_REQUIRED)
+DEBUG CHECK: ALLOWED_HOSTS is currently: 127.0.0.1,localhost,lms-drf-posgresql-react.onrender.com
+Operations to perform:
+  Apply all migrations: account, admin, auth, authtoken, contenttypes, lms, sessions, sites, socialaccount
+Running migrations:
+  No migrations to apply.
