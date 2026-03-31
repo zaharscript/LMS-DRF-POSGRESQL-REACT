@@ -40,15 +40,20 @@ class RegisterView(generics.CreateAPIView):
 
 
 class GoogleLoginView(SocialLoginView):
-    """Receives 'code' from React frontend, exchanges for JWT via SimpleJWT."""
+    """
+    Receives 'access_token' (which is the ID Token/credential) from React frontend (@react-oauth/google).
+    """
     adapter_class = GoogleOAuth2Adapter
     client_class = OAuth2Client
 
     def post(self, request, *args, **kwargs):
+        # Log the incoming data for debugging
         with open("oauth_debug.txt", "a") as f:
-            f.write(f"\n--- NEW REQUEST ---\n")
+            f.write(f"\n--- GOOGLE IDENTITY SERVICES REQUEST ---\n")
             f.write(f"Data: {request.data}\n")
+        
         response = super().post(request, *args, **kwargs)
+        
         if response.status_code >= 400:
             with open("oauth_debug.txt", "a") as f:
                 f.write(f"ERROR Response: {response.data}\n")

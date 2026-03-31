@@ -5,7 +5,6 @@ import { AuthProvider } from "./context/AuthContext";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import GuestRoute from "./components/GuestRoute";
-import GoogleCallback from "./components/GoogleCallback";
 
 import DashboardPage from "./pages/DashboardPage";
 import CourseDetails from "./pages/CourseDetails";
@@ -48,9 +47,6 @@ function App() {
                 </GuestRoute>
               }
             />
-            {/* Callback ROUTE  */}
-            <Route path="/login/callback" element={<GoogleCallback />} />
-
             <Route
               path="/register"
               element={

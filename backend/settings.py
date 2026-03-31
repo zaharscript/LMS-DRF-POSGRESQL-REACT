@@ -54,16 +54,6 @@ ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 
 
 
-# Check if we are running on Render (Production)
-IS_PRODUCTION = os.getenv('RENDER') is not None
-
-if IS_PRODUCTION:
-    # Production (Live Site)
-    CALLBACK_URL = "https://mystudyplan25.netlify.app/login/callback"
-else:
-    # Local Development (Example port 5174
-    CALLBACK_URL = "http://127.0.0.1:5174/login/callback"
-
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "APP": {
@@ -80,7 +70,6 @@ SOCIALACCOUNT_PROVIDERS = {
             "access_type": "offline",
             "prompt": "consent",
         },
-        "CALLBACK_URL": CALLBACK_URL,
     },
 }
 
