@@ -1,6 +1,4 @@
 from django.db import models
-
-
 from django.conf import settings
 
 class Course(models.Model):
@@ -22,7 +20,6 @@ class Course(models.Model):
         return self.title
 
 
-
 class Section(models.Model):
     course = models.ForeignKey(
         Course, related_name="sections", on_delete=models.CASCADE
@@ -38,7 +35,7 @@ class Topic(models.Model):
         Section, related_name="topics", on_delete=models.CASCADE
     )
     title = models.CharField(max_length=255)
-    completed = models.BooleanField(default=False)
+    is_completed = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.section.title} - {self.title}"

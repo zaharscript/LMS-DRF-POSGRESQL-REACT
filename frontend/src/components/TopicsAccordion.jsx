@@ -29,7 +29,7 @@ export default function TopicsAccordion({
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
-                  checked={topic.completed}
+                  checked={topic.is_completed}
                   onChange={(e) => {
                     e.stopPropagation();
                     onToggleComplete(topic);
@@ -38,9 +38,8 @@ export default function TopicsAccordion({
                 />
                 <span
                   onClick={() => toggleOpen(topic.id)}
-                  className={`text-sm cursor-pointer ${
-                    topic.completed ? "line-through text-gray-500" : ""
-                  }`}
+                  className={`text-sm cursor-pointer ${topic.is_completed ? "line-through text-gray-500" : ""
+                    }`}
                 >
                   {topic.title}
                 </span>
@@ -69,9 +68,8 @@ export default function TopicsAccordion({
                 {/* Toggle arrow */}
                 <ChevronDown
                   onClick={() => toggleOpen(topic.id)}
-                  className={`w-5 h-5 transition cursor-pointer ${
-                    isOpen ? "rotate-180" : ""
-                  }`}
+                  className={`w-5 h-5 transition cursor-pointer ${isOpen ? "rotate-180" : ""
+                    }`}
                 />
               </div>
             </div>

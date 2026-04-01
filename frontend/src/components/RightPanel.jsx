@@ -16,7 +16,7 @@ export default function RightPanel({ course, onRefresh }) {
     course.sections?.reduce((sum, s) => sum + (s.topics?.length || 0), 0) || 0;
   const completedTopics =
     course.sections?.reduce(
-      (sum, s) => sum + (s.topics?.filter((t) => t.completed).length || 0),
+      (sum, s) => sum + (s.topics?.filter((t) => t.is_completed).length || 0),
       0
     ) || 0;
   const percent = totalTopics

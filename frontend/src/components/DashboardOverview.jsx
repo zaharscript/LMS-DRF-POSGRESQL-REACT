@@ -36,9 +36,9 @@ export default function DashboardOverview({ courses = [], user }) {
       const topics = c.sections?.flatMap((s) => s.topics || []) || [];
 
       totalTopics += topics.length;
-      completedTopics += topics.filter((t) => t.completed).length;
+      completedTopics += topics.filter((t) => t.is_completed).length;
 
-      if (topics.length && topics.every((t) => t.completed)) completed++;
+      if (topics.length && topics.every((t) => t.is_completed)) completed++;
       else if (topics.length) inProgress++;
     });
 

@@ -6,7 +6,7 @@ from .models import Course, Section, Topic
 class TopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
-        fields = ['id', 'section', 'title', 'completed']   # <-- section added
+        fields = ['id', 'section', 'title', 'is_completed']
 
 
 class SectionSerializer(serializers.ModelSerializer):
@@ -14,7 +14,7 @@ class SectionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Section
-        fields = ['id', 'course', 'title', 'topics']       # <-- course added
+        fields = ['id', 'course', 'title', 'topics']
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -22,7 +22,8 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'title', 'instructor','provider', 'date_joined', 'sections']
+        fields = ['id', 'title', 'instructor', 'provider', 'date_joined', 'sections']
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)

@@ -14,6 +14,7 @@ export default function CourseDetails() {
 
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [importing, setImporting] = useState(false);
 
   // modal state
   const [isNewSectionOpen, setIsNewSectionOpen] = useState(false);
@@ -91,50 +92,63 @@ export default function CourseDetails() {
   const handleToggleTopic = async (topic) => {
     await TopicAPI.update(topic.id, {
       title: topic.title,
-      completed: !topic.completed,
+      is_completed: !topic.is_completed,
       section: topic.section,
     });
     await load();
   };
 
-  if (loading) return <p className="p-6">Loading...</p>;
-  if (!course) return <p className="p-6">Course not found.</p>;
+  // Syllabus Import
+  const handleImportSyllabus = async () => {
+    const url = prompt("Enter W3Schools tutorial URL (e.g., https://www.w3schools.com/dsa/dsa_intro.php):");
+    if (!url) return;
+
+    setImporting(true);
+    try {
+      const res = await CourseAPI.importSyllabus(course.id, url);
+      setCourse(res.data);
+      alert("Syllabus imported successfully!");
+    } catch (err) {
+      console.error("Import failed:", err);
+      alert(err.response?.data?.error || "Failed to import syllabus.");
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  if (loading) return <p className="p-6 text-gray-900 dark:text-gray-100">Loading...</p>;
+  if (!course) return <p className="p-6 text-gray-900 dark:text-gray-100">Course not found.</p>;
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-4xl mx-auto text-gray-900 dark:text-gray-100">
       <button
         onClick={() => navigate("/")}
-        className="text-blue-600 mb-4 hover:underline"
+        className="text-blue-600 dark:text-blue-400 mb-4 hover:underline flex items-center gap-1"
       >
-        ← Back
+        ← Back to Dashboard
       </button>
 
-      <div className="mb-4 flex justify-between items-start gap-4">
+      <div className="mb-6 flex justify-between items-start gap-4">
         <div>
           <h1 className="text-3xl font-bold">{course.title}</h1>
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             {course.instructor} {course.provider ? `• ${course.provider}` : ""}{" "}
-            • {course.date_joined}
+            • Joined on {course.date_joined}
           </div>
         </div>
 
         <button
           onClick={handleDeleteCourse}
-          className="
-      px-4 py-2 rounded-lg
-      bg-red-600 text-white
-      hover:bg-red-700
-      transition
-    "
+          className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
         >
           Delete Course
         </button>
       </div>
 
-      <div className="flex gap-3 mb-6">
+      <div className="flex flex-wrap gap-3 mb-8">
         <button
           onClick={() => setIsNewSectionOpen(true)}
-          className="px-4 py-2 bg-green-600 text-white rounded"
+          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
         >
           + Add Section
         </button>
@@ -143,9 +157,16 @@ export default function CourseDetails() {
             setTargetSectionId(course.sections?.[0]?.id || null);
             setIsNewTopicOpen(true);
           }}
-          className="px-4 py-2 bg-purple-600 text-white rounded"
+          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
         >
           + Add Topic
+        </button>
+        <button
+          onClick={handleImportSyllabus}
+          disabled={importing}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
+        >
+          {importing ? "Importing..." : "⚡ Import from W3Schools"}
         </button>
       </div>
 

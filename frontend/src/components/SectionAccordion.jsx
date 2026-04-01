@@ -20,7 +20,7 @@ export default function SectionAccordion({
     <div className="mt-6 space-y-4">
       {sections.map((sec, idx) => {
         const total = sec.topics?.length || 0;
-        const completed = sec.topics?.filter((t) => t.completed).length || 0;
+        const completed = sec.topics?.filter((t) => t.is_completed).length || 0;
         const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
 
         return (
