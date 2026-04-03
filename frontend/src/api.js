@@ -2,7 +2,8 @@ import axios from "axios";
 
 export const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 export const API_BASE_URL = isLocal ? "http://127.0.0.1:8000" : import.meta.env.VITE_API_URL;
-export const GOOGLE_REDIRECT_URI = isLocal ? "http://127.0.0.1:5174/login/callback" : "https://mystudyplan25.netlify.app/login/callback";
+export const GOOGLE_REDIRECT_URI = import.meta.env.VITE_OAUTH_REDIRECT_URI
+  || `${window.location.origin}/login/callback`;
 
 console.log("🔥 API Base URL:", API_BASE_URL);
 

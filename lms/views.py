@@ -64,6 +64,10 @@ class GoogleLoginView(APIView):
 
         try:
             client_id = settings.SOCIALACCOUNT_PROVIDERS["google"]["APP"]["client_id"]
+            redirect_uri = request.data.get("redirect_uri")
+            if redirect_uri:
+                print(f"🔹 OAuth Redirect URI from frontend: {redirect_uri}")
+
             # Verify the token against Google's servers
             idinfo = id_token.verify_oauth2_token(
                 token,

@@ -36,7 +36,8 @@ export default function LoginPage() {
     try {
       console.log("GOOGLE CREDENTIAL RECEIVED:", credentialResponse.credential);
       const res = await axios.post(`${API_BASE_URL}/api/auth/google/`, {
-        id_token: credentialResponse.credential, // Many allauth/dj-rest-auth versions expect 'access_token'
+        id_token: credentialResponse.credential,
+        redirect_uri: import.meta.env.VITE_OAUTH_REDIRECT_URI || `${window.location.origin}/login/callback`,
       });
 
       const { access, refresh } = res.data;

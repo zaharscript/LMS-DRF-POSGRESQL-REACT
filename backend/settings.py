@@ -10,6 +10,19 @@ print(f"DEBUG CHECK: ALLOWED_HOSTS is currently: {os.getenv('ALLOWED_HOSTS')}")
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ------------------------------------------------------------------------------
+# ENVIRONMENT LOGIC
+# ------------------------------------------------------------------------------
+IS_PRODUCTION = os.getenv("RENDER", "False") == "True"
+
+if IS_PRODUCTION:
+    CALLBACK_URL = "https://mystudyplan25.netlify.app/login/callback"
+else:
+    CALLBACK_URL = os.getenv("VITE_OAUTH_REDIRECT_URI", "http://localhost:5174/login/callback")
+
+print(f"🌍 Running in {'PRODUCTION' if IS_PRODUCTION else 'DEVELOPMENT'} mode")
+print(f"🔗 Callback URL set to: {CALLBACK_URL}")
+
+# ------------------------------------------------------------------------------
 # SECURITY
 # ------------------------------------------------------------------------------
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
