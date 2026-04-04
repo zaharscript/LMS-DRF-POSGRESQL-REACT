@@ -10,6 +10,7 @@ from .views import (
     TopicListCreateView,
     TopicDetailView,
     SyllabusImportView,
+    PastedSyllabusImportView,
 )
 
 urlpatterns = [
@@ -21,6 +22,7 @@ urlpatterns = [
     path("courses/", CourseListCreateView.as_view(), name="course-list"),
     path("courses/<int:pk>/", CourseDetailView.as_view(), name="course-detail"),
     path("courses/<int:pk>/import-syllabus/", SyllabusImportView.as_view(), name="import-syllabus"),
+    path("courses/<int:pk>/import-pasted-syllabus/", PastedSyllabusImportView.as_view(), name="import-pasted-syllabus"),
 
     # 📂 Sections
     path("sections/", SectionListCreateView.as_view(), name="section-list"),

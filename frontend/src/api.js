@@ -2,8 +2,7 @@ import axios from "axios";
 
 export const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 export const API_BASE_URL = isLocal ? "http://127.0.0.1:8000" : import.meta.env.VITE_API_URL;
-export const GOOGLE_REDIRECT_URI = import.meta.env.VITE_OAUTH_REDIRECT_URI
-  || `${window.location.origin}/login/callback`;
+export const GOOGLE_REDIRECT_URI = isLocal ? "http://127.0.0.1:5174/login/callback" : "https://mystudyplan25.netlify.app/login/callback";
 
 console.log("🔥 API Base URL:", API_BASE_URL);
 
@@ -70,6 +69,7 @@ export const CourseAPI = {
   update: (id, data) => api.patch(`courses/${id}/`, data),
   delete: (id) => api.delete(`courses/${id}/`),
   importSyllabus: (id, url) => api.post(`courses/${id}/import-syllabus/`, { url }),
+  importPastedSyllabus: (id, raw_text) => api.post(`courses/${id}/import-pasted-syllabus/`, { raw_text }),
 };
 
 export const SectionAPI = {

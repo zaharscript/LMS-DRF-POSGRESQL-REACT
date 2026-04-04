@@ -7,6 +7,8 @@ import NewSectionModal from "../components/NewSectionModal";
 import NewTopicModal from "../components/NewTopicModal";
 import EditSectionModal from "../components/EditSectionModal";
 import EditTopicModal from "../components/EditTopicModal";
+import PasteSyllabusModal from "../components/PasteSyllabusModal";
+import { ClipboardList } from "lucide-react";
 
 export default function CourseDetails() {
   const { id } = useParams(); // expects route: /course/:id
@@ -21,6 +23,7 @@ export default function CourseDetails() {
   const [isNewTopicOpen, setIsNewTopicOpen] = useState(false);
   const [isEditSectionOpen, setIsEditSectionOpen] = useState(false);
   const [isEditTopicOpen, setIsEditTopicOpen] = useState(false);
+  const [isPasteSyllabusOpen, setIsPasteSyllabusOpen] = useState(false);
 
   const [targetSectionId, setTargetSectionId] = useState(null);
   const [selectedSection, setSelectedSection] = useState(null);
@@ -98,7 +101,7 @@ export default function CourseDetails() {
     await load();
   };
 
-  // Syllabus Import
+  // Syllabus Import (W3Schools)
   const handleImportSyllabus = async () => {
     const url = prompt("Enter W3Schools tutorial URL (e.g., https://www.w3schools.com/dsa/dsa_intro.php):");
     if (!url) return;
@@ -113,6 +116,19 @@ export default function CourseDetails() {
       alert(err.response?.data?.error || "Failed to import syllabus.");
     } finally {
       setImporting(false);
+    }
+  };
+
+  // Pasted Syllabus Import
+  const handleImportPastedSyllabus = async (raw_text) => {
+    try {
+      const res = await CourseAPI.importPastedSyllabus(course.id, raw_text);
+      setCourse(res.data);
+      alert("Syllabus imported successfully!");
+    } catch (err) {
+      console.error("Import failed:", err);
+      alert(err.response?.data?.error || "Failed to import syllabus.");
+      throw err; // Propagate to modal to handle loading state
     }
   };
 
@@ -161,13 +177,22 @@ export default function CourseDetails() {
         >
           + Add Topic
         </button>
-        <button
-          onClick={handleImportSyllabus}
-          disabled={importing}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
-        >
-          {importing ? "Importing..." : "⚡ Import from W3Schools"}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={handleImportSyllabus}
+            disabled={importing}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
+          >
+            {importing ? "Importing..." : "⚡ W3Schools Import"}
+          </button>
+          <button
+            onClick={() => setIsPasteSyllabusOpen(true)}
+            className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition flex items-center gap-2"
+          >
+            <ClipboardList size={18} />
+            Paste Syllabus
+          </button>
+        </div>
       </div>
 
       <SectionAccordion
@@ -208,6 +233,12 @@ export default function CourseDetails() {
           await handleCreateTopic(sectionId, title);
           setIsNewTopicOpen(false);
         }}
+      />
+
+      <PasteSyllabusModal
+        isOpen={isPasteSyllabusOpen}
+        onClose={() => setIsPasteSyllabusOpen(false)}
+        onImport={handleImportPastedSyllabus}
       />
 
       {selectedSection && (

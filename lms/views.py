@@ -14,6 +14,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.db import transaction
 from .utils.scraper import scrape_w3schools_syllabus
+from .utils.parsers import parse_raw_syllabus
 from .models import Course, Section, Topic
 from .serializers import (
     RegisterSerializer,
@@ -228,3 +229,48 @@ class SyllabusImportView(APIView):
 
         except Exception as e:
             return Response({"error": f"Database error during import: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class PastedSyllabusImportView(APIView):
+    """
+    POST /api/courses/<course_id>/import-pasted-syllabus/
+    Body: { "raw_text": "..." }
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            course = Course.objects.get(pk=pk, user=request.user)
+        except Course.DoesNotExist:
+            return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        raw_text = request.data.get("raw_text")
+        if not raw_text:
+            return Response({"error": "No text provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            syllabus_data = parse_raw_syllabus(raw_text)
+        except Exception as e:
+            return Response({"error": f"Parsing failed: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not syllabus_data:
+            return Response({"error": "Could not identify any sections or topics in the pasted text."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            with transaction.atomic():
+                for sec_data in syllabus_data:
+                    section, _ = Section.objects.get_or_create(
+                        course=course,
+                        title=sec_data["title"]
+                    )
+                    for topic_title in sec_data["topics"]:
+                        Topic.objects.get_or_create(
+                            section=section,
+                            title=topic_title
+                        )
+            
+            serializer = CourseSerializer(course)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": f"Database error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
