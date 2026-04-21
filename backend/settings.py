@@ -91,10 +91,12 @@ SOCIALACCOUNT_ADAPTER = "allauth.socialaccount.adapter.DefaultSocialAccountAdapt
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+
+    "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
+
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -133,16 +135,13 @@ if DATABASE_URL and DATABASE_URL.strip():
 # ------------------------------------------------------------------------------
 # CORS
 # ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# CORS
-# ------------------------------------------------------------------------------
-CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_ALL_ORIGINS = False
+
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:5174",
-    "http://localhost:5174",
-    "http://127.0.0.1:3000",
-    "http://localhost:3000",
     "https://mystudyplan25.netlify.app",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
 ]
 
 # ------------------------------------------------------------------------------
