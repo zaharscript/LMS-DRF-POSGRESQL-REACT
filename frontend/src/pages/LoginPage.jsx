@@ -39,8 +39,7 @@ export default function LoginPage() {
 
     try {
       const res = await axios.post(`${API_BASE_URL}/api/auth/google/`, {
-        id_token: credentialResponse.credential,
-        redirect_uri: GOOGLE_REDIRECT_URI,
+        id_token: credentialResponse.credential
       });
 
       const { access, refresh } = res.data;
